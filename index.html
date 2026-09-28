@@ -168,7 +168,7 @@
         border: 1px solid #555555;
         max-height: 60vh;
         width: 100%;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: auto; 
         padding: 1rem;
         margin-bottom: 1.5rem;
@@ -198,28 +198,43 @@
         background: #FFFFFF;
     }
     
-    .list-container::-webkit-scrollbar-button:vertical:decrement {
+    .list-container::-webkit-scrollbar-button:vertical:decrement,
+    .list-container::-webkit-scrollbar-button:horizontal:decrement {
         display: block;
-        height: 24px;
         background-color: #333333;
+        border: 2px solid #000000;
+        cursor: pointer;
+    }
+    .list-container::-webkit-scrollbar-button:vertical:decrement {
+        height: 24px;
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="12,7 18,17 6,17" fill="%23FFFFFF"/></svg>');
+    }
+    .list-container::-webkit-scrollbar-button:horizontal:decrement {
+        width: 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="7,12 17,6 17,18" fill="%23FFFFFF"/></svg>');
+    }
+
+    .list-container::-webkit-scrollbar-button:vertical:increment,
+    .list-container::-webkit-scrollbar-button:horizontal:increment {
+        display: block;
+        background-color: #333333;
         border: 2px solid #000000;
         cursor: pointer;
     }
     .list-container::-webkit-scrollbar-button:vertical:increment {
-        display: block;
         height: 24px;
-        background-color: #333333;
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="12,17 6,7 18,7" fill="%23FFFFFF"/></svg>');
-        border: 2px solid #000000;
-        cursor: pointer;
+    }
+    .list-container::-webkit-scrollbar-button:horizontal:increment {
+        width: 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="17,12 7,6 7,18" fill="%23FFFFFF"/></svg>');
     }
 
     .name-list {
         list-style-type: none;
         padding: 0;
         margin: 0; 
-        min-width: 800px; 
+        min-width: 950px; /* Forces wide container */
     }
 
     .name-list li {
@@ -227,7 +242,9 @@
         border-bottom: 1px dashed #333333; 
         display: flex;
         justify-content: space-between;
+        align-items: center;
         transition: background-color 0.1s, color 0.1s;
+        white-space: nowrap; /* PREVENTS ALL LINE WRAPPING */
     }
 
     /* Highlight style when searching: Black text on White background */
@@ -241,11 +258,11 @@
         font-weight: bold;
     }
 
-    .col-name { width: 25%; color: #FFFFFF; font-weight: normal; }
-    .col-kt { width: 15%; color: #FFFFFF; }
-    .col-job { width: 20%; color: #FFFFFF; }
-    .col-offense { width: 25%; color: #FFFFFF; } 
-    .col-date { width: 15%; text-align: right; color: #FFFFFF; }
+    .col-name { width: 28%; color: #FFFFFF; font-weight: normal; white-space: nowrap; }
+    .col-kt { width: 14%; color: #FFFFFF; white-space: nowrap; }
+    .col-job { width: 20%; color: #FFFFFF; white-space: nowrap; }
+    .col-offense { width: 23%; color: #FFFFFF; white-space: nowrap; } 
+    .col-date { width: 15%; text-align: right; color: #FFFFFF; white-space: nowrap; }
 
     .action-bar {
         display: flex;
