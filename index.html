@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIDARR.IS</title>
+<title>VIDARR.IS // THE LIST</title>
 <style>
     /* Global UI Font - Helvetica/Roboto */
     body {
@@ -113,10 +113,13 @@
         max-width: 1200px;
     }
 
-    /* --- SIDEBAR / INDEX --- */
+    /* --- SIDEBAR / INDEX & ID CARD --- */
     .sidebar {
         width: 250px;
         flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
     }
 
     .sidebar h3 {
@@ -155,6 +158,68 @@
 
     .backlog-list .current::before {
         content: "> ";
+    }
+
+    /* Fixed ID Card in Sidebar */
+    #id-card {
+        background-color: #050505;
+        border: 1px solid #555;
+        box-shadow: 4px 4px 0px rgba(255, 0, 0, 0.2);
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    .id-wrapper {
+        display: flex;
+        flex-direction: column; /* Stacked for a dossier look */
+        gap: 15px;
+    }
+
+    .id-photo {
+        width: 100%;
+        height: 160px;
+        background-color: #111;
+        border: 1px dashed #444;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        font-size: 0.7rem;
+        text-align: center;
+    }
+
+    .id-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .id-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .id-label {
+        color: #777;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .id-value {
+        color: #FFF;
+        font-size: 0.85rem;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .id-value.red {
+        color: #FF0000;
     }
 
     /* --- MAIN CONTENT & LIST --- */
@@ -234,35 +299,53 @@
         list-style-type: none;
         padding: 0;
         margin: 0; 
-        min-width: 950px; /* Forces wide container */
+        min-width: 950px; 
     }
 
     .name-list li {
-        padding: 0.5rem 0;
+        padding: 0.5rem 1rem;
         border-bottom: 1px dashed #333333; 
+        border-left: 3px solid transparent; /* Reserved for selection bar */
         display: flex;
         justify-content: space-between;
         align-items: center;
-        transition: background-color 0.1s, color 0.1s;
-        white-space: nowrap; /* PREVENTS ALL LINE WRAPPING */
+        white-space: nowrap; 
+        cursor: pointer; /* Indicates it can be clicked */
+        user-select: none;
     }
 
-    /* Highlight style when searching: Black text on White background */
+    /* Hover effect */
+    .name-list li:hover {
+        background-color: #111111;
+    }
+
+    /* Selection Highlight Bar */
+    .name-list li.selected {
+        background-color: #1A1A1A;
+        border-left: 3px solid #FF0000;
+    }
+
+    /* Search Highlight: Black text on White background */
     .name-list li.highlight {
         background-color: #FFFFFF;
         border-bottom: 1px solid #FFFFFF;
     }
-
     .name-list li.highlight span {
         color: #000000 !important;
         font-weight: bold;
     }
+    
+    /* Keep the red selection border visible even if search highlighted */
+    .name-list li.highlight.selected {
+        border-left: 3px solid #FF0000;
+        background-color: #DDDDDD; 
+    }
 
-    .col-name { width: 28%; color: #FFFFFF; font-weight: normal; white-space: nowrap; }
-    .col-kt { width: 14%; color: #FFFFFF; white-space: nowrap; }
-    .col-job { width: 20%; color: #FFFFFF; white-space: nowrap; }
-    .col-offense { width: 23%; color: #FFFFFF; white-space: nowrap; } 
-    .col-date { width: 15%; text-align: right; color: #FFFFFF; white-space: nowrap; }
+    .col-name { width: 28%; color: #FFFFFF; font-weight: normal; white-space: nowrap; pointer-events: none; }
+    .col-kt { width: 14%; color: #FFFFFF; white-space: nowrap; pointer-events: none; }
+    .col-job { width: 20%; color: #FFFFFF; white-space: nowrap; pointer-events: none; }
+    .col-offense { width: 23%; color: #FFFFFF; white-space: nowrap; pointer-events: none; } 
+    .col-date { width: 15%; text-align: right; color: #FFFFFF; white-space: nowrap; pointer-events: none; }
 
     .action-bar {
         display: flex;
@@ -324,8 +407,6 @@
 
         .sidebar {
             width: 100%;
-            display: flex;
-            flex-direction: column;
         }
 
         .backlog-list {
@@ -336,6 +417,11 @@
 
         .backlog-list li {
             margin-bottom: 0;
+        }
+        
+        #id-card {
+            width: 100%;
+            max-width: 400px;
         }
     }
 
@@ -403,19 +489,52 @@
         
         <!-- Sidebar / Context -->
         <aside class="sidebar">
-            <h3>INDEX</h3>
-            <ul class="backlog-list">
-                <li>
-                    <span class="date">SYS_INIT_00</span>
-                    SERVER PROVISIONED<br>
-                    <span style="color:#666; font-size: 0.8rem;">ROOT ACCESS SECURED</span>
-                </li>
-                <li class="current">
-                    <span class="date">PUBLICATION_01</span>
-                    THE LIST (503 RECORDS)<br>
-                    <span style="color:#AAA; font-size: 0.8rem;">ACTIVE</span>
-                </li>
-            </ul>
+            <div>
+                <h3>INDEX</h3>
+                <ul class="backlog-list">
+                    <li>
+                        <span class="date">SYS_INIT_00</span>
+                        SERVER PROVISIONED<br>
+                        <span style="color:#666; font-size: 0.8rem;">ROOT ACCESS SECURED</span>
+                    </li>
+                    <li class="current">
+                        <span class="date">PUBLICATION_01</span>
+                        THE LIST (503 RECORDS)<br>
+                        <span style="color:#AAA; font-size: 0.8rem;">ACTIVE</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Fixed ID Card Panel -->
+            <div id="id-card">
+                <div class="id-wrapper">
+                    <div class="id-photo">
+                        [ IMAGE ]<br>[ MISSING ]
+                    </div>
+                    <div class="id-details">
+                        <div class="id-field">
+                            <span class="id-label">Subject ID</span>
+                            <span class="id-value" id="card-id">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Name</span>
+                            <span class="id-value" id="card-name">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Kennitala</span>
+                            <span class="id-value" id="card-kt">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Designation</span>
+                            <span class="id-value" id="card-job">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Conviction</span>
+                            <span class="id-value red" id="card-offense">---</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content Area -->
@@ -450,6 +569,15 @@
         const searchInput = document.getElementById('searchInput');
         const resultCount = document.getElementById('resultCount');
         
+        // ID Card Elements
+        const cardId = document.getElementById('card-id');
+        const cardName = document.getElementById('card-name');
+        const cardKt = document.getElementById('card-kt');
+        const cardJob = document.getElementById('card-job');
+        const cardOffense = document.getElementById('card-offense');
+
+        let selectedLi = null;
+
         const firstNames = ["Jón", "Gunnar", "Ólafur", "Einar", "Magnús"]; 
         const lastNames = ["Jónsson", "Guðmundsson", "Sigurðsson", "Þórðarson", "Pálsson"];
         const jobs = ["Judge", "Lawyer", "Politician", "Artist", "CEO", "Surgeon", "Producer", "Banker"];
@@ -483,32 +611,98 @@
         // Generate the 503 list items
         for(let i = 1; i <= 503; i++) {
             const li = document.createElement('li');
+            const formattedId = String(i).padStart(3, '0');
             
-            if (i === 503) {
-                li.innerHTML = `
-                    <span class="col-name">503 - ARNAR VIGLUNDSSON</span>
-                    <span class="col-kt">140865-2289</span>
-                    <span class="col-job">CHIEF OF POLICE</span>
-                    <span class="col-offense">RAPIST</span>
-                    <span class="col-date">UNDISCLOSED</span>
-                `;
-            } else {
-                const fullName = `${getRandom(firstNames)} ${getRandom(lastNames)}`.toUpperCase();
-                const kennitala = getFakeKennitala();
-                const job = getRandom(jobs).toUpperCase();
-                const offense = getRandom(offenses).toUpperCase();
-                const date = getRandomDate();
+            let name, kennitala, job, offense, date;
 
-                li.innerHTML = `
-                    <span class="col-name">${String(i).padStart(3, '0')} - ${fullName}</span>
-                    <span class="col-kt">${kennitala}</span>
-                    <span class="col-job">${job}</span>
-                    <span class="col-offense">${offense}</span>
-                    <span class="col-date">${date}</span>
-                `;
+            if (i === 503) {
+                name = "ARNAR VIGLUNDSSON";
+                kennitala = "140865-2289";
+                job = "CHIEF OF POLICE";
+                offense = "RAPIST";
+                date = "UNDISCLOSED";
+            } else {
+                name = `${getRandom(firstNames)} ${getRandom(lastNames)}`.toUpperCase();
+                kennitala = getFakeKennitala();
+                job = getRandom(jobs).toUpperCase();
+                offense = getRandom(offenses).toUpperCase();
+                date = getRandomDate();
             }
+
+            // Save data attributes for the ID card
+            li.dataset.id = formattedId;
+            li.dataset.name = name;
+            li.dataset.kt = kennitala;
+            li.dataset.job = job;
+            li.dataset.offense = offense;
+
+            li.innerHTML = `
+                <span class="col-name">${formattedId} - ${name}</span>
+                <span class="col-kt">${kennitala}</span>
+                <span class="col-job">${job}</span>
+                <span class="col-offense">${offense}</span>
+                <span class="col-date">${date}</span>
+            `;
             
             listContainer.appendChild(li);
+        }
+
+        // --- SELECTION LOGIC --- //
+        function selectRow(li) {
+            if (selectedLi) {
+                selectedLi.classList.remove('selected');
+            }
+            selectedLi = li;
+            li.classList.add('selected');
+            
+            // Populate the ID card in the sidebar
+            cardId.textContent = li.dataset.id;
+            cardName.textContent = li.dataset.name;
+            cardKt.textContent = li.dataset.kt;
+            cardJob.textContent = li.dataset.job;
+            cardOffense.textContent = li.dataset.offense;
+        }
+
+        // 1. Select via Mouse Click
+        listContainer.addEventListener('click', function(e) {
+            const li = e.target.closest('li');
+            if (!li) return;
+            selectRow(li);
+        });
+
+        // 2. Select via Keyboard Arrow Keys (Up/Down)
+        document.addEventListener('keydown', function(e) {
+            if (!selectedLi) return;
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault(); // Stop entire page from scrolling
+                let next = selectedLi.nextElementSibling;
+                // Skip hidden rows if search is active
+                while(next && next.style.display === 'none') {
+                    next = next.nextElementSibling;
+                }
+                if (next) {
+                    selectRow(next);
+                    next.scrollIntoView({ block: 'nearest' });
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault(); 
+                let prev = selectedLi.previousElementSibling;
+                // Skip hidden rows if search is active
+                while(prev && prev.style.display === 'none') {
+                    prev = prev.previousElementSibling;
+                }
+                if (prev) {
+                    selectRow(prev);
+                    prev.scrollIntoView({ block: 'nearest' });
+                }
+            }
+        });
+
+        // Auto-select the very first entry on page load
+        const firstEntry = listContainer.querySelector('li');
+        if (firstEntry) {
+            selectRow(firstEntry);
         }
 
         // Active Search Bar Functionality (Highlight without hiding)
@@ -519,21 +713,17 @@
             let firstMatch = null;
             
             for (let i = 0; i < items.length; i++) {
-                const nameText = items[i].querySelector('.col-name').textContent;
+                const nameText = items[i].dataset.name; 
                 
-                // Keep the item visible regardless
-                items[i].style.display = 'flex';
+                items[i].style.display = 'flex'; // Keep visible
                 
                 if (searchTerm.length === 0) {
-                    // Reset styling when search is empty
                     items[i].classList.remove('highlight');
-                } else if (nameText.toUpperCase().includes(searchTerm)) {
-                    // Highlight match
+                } else if (nameText.includes(searchTerm)) {
                     items[i].classList.add('highlight');
                     matchCount++;
                     if (!firstMatch) firstMatch = items[i];
                 } else {
-                    // Un-highlight non-matches
                     items[i].classList.remove('highlight');
                 }
             }
@@ -544,10 +734,10 @@
             } else {
                 resultCount.textContent = `[ ${matchCount} RESULTS ]`;
                 
-                // Auto-scroll to the first match if it exists
                 if (firstMatch) {
-                    // Offset handles the padding of the container
                     listScrollContainer.scrollTop = firstMatch.offsetTop - listScrollContainer.offsetTop;
+                    // Automatically lock selection onto the first search hit
+                    selectRow(firstMatch);
                 }
             }
         });
