@@ -31,7 +31,7 @@
         font-weight: 900;
         letter-spacing: 0.05em;
         margin: 0;
-        color: #FF0000; /* Stark Red Banner */
+        color: #FF0000; 
         text-transform: uppercase;
     }
 
@@ -62,9 +62,10 @@
 
     /* Secret link to Under Construction page */
     .secret-btn {
-        color: #111111; /* Very dark grey, almost invisible */
+        color: #111111; 
         text-decoration: none;
         margin-left: 1rem;
+        font-size: 1.2rem;
         font-weight: bold;
         cursor: crosshair;
         transition: color 0.2s;
@@ -76,6 +77,7 @@
 
     .site-nav {
         display: flex;
+        flex-wrap: wrap;
         gap: 2rem;
         margin-bottom: 3rem;
         max-width: 1200px;
@@ -87,6 +89,7 @@
         color: #AAAAAA;
         text-decoration: none;
         font-weight: bold;
+        white-space: nowrap;
     }
 
     .site-nav a:hover, .site-nav a.active {
@@ -151,13 +154,12 @@
     }
 
     .list-container {
-        /* Raw Data Font Enforced Here */
         font-family: "Courier New", Courier, monospace;
-        
         border: 1px solid #555555;
         max-height: 60vh;
         width: 100%;
         overflow-y: scroll;
+        overflow-x: auto; /* Allows horizontal scroll on narrow screens */
         padding: 1rem;
         margin-bottom: 1.5rem;
         background-color: #030303;
@@ -165,17 +167,21 @@
 
     .list-container::-webkit-scrollbar {
         width: 24px;
+        height: 24px;
         background: #111111;
         border-left: 1px solid #444444;
+        border-top: 1px solid #444444;
     }
     .list-container::-webkit-scrollbar-track {
         background: #050505;
         border-left: 1px solid #333333;
+        border-top: 1px solid #333333;
     }
     .list-container::-webkit-scrollbar-thumb {
         background: #DDDDDD;
         border: 3px solid #000000;
         min-height: 40px;
+        min-width: 40px;
     }
     .list-container::-webkit-scrollbar-thumb:hover {
         background: #FFFFFF;
@@ -202,6 +208,7 @@
         list-style-type: none;
         padding: 0;
         margin: 0; 
+        min-width: 800px; /* Forces horizontal scrolling on mobile to keep data readable */
     }
 
     .name-list li {
@@ -221,6 +228,7 @@
         display: flex;
         gap: 1rem;
         margin-bottom: 4rem;
+        flex-wrap: wrap;
     }
 
     .action-btn {
@@ -228,7 +236,7 @@
         color: #FFFFFF;
         border: 1px solid #555555;
         padding: 0.5rem 1rem;
-        font-family: inherit; /* Inherits Helvetica/Roboto */
+        font-family: inherit; 
         font-size: 0.9rem;
         font-weight: bold;
         cursor: pointer;
@@ -259,6 +267,69 @@
         color: #666666;
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* --- ADAPTIVE / MOBILE STYLES --- */
+    @media (max-width: 850px) {
+        body {
+            padding: 1.5rem 2rem;
+        }
+
+        .layout-wrapper {
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .backlog-list {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .backlog-list li {
+            margin-bottom: 0;
+        }
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 1rem;
+        }
+
+        .site-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .header-controls {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex-grow: 1;
+        }
+
+        .search-box input {
+            width: 100%;
+        }
+
+        .site-nav {
+            gap: 1rem;
+        }
+        
+        .site-title {
+            font-size: 2rem;
+        }
     }
 </style>
 </head>
@@ -269,10 +340,10 @@
         <h1 class="site-title">VIDARR.IS</h1>
         <div class="header-controls">
             <div class="search-box">
-                <input type="text" placeholder="[ SEARCH DATABASE ]">
+                <input type="text" placeholder="SEARCH">
             </div>
-            <!-- Secret button is the underscore right here -->
-            <a href="https://vidarr.is/underconstruction.html" class="secret-btn">_</a>
+            <!-- Secret button is now a cross (+) -->
+            <a href="https://vidarr.is/underconstruction.html" class="secret-btn">+</a>
         </div>
     </header>
 
