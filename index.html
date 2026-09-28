@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIDARR.IS // THE LIST</title>
 <style>
+    /* Global UI Font - Helvetica/Roboto */
     body {
         background-color: #000000;
         color: #FFFFFF;
-        font-family: "Courier New", Courier, monospace;
+        font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
         margin: 0;
         padding: 2rem 4rem;
         line-height: 1.5;
@@ -26,10 +27,18 @@
     }
 
     .site-title {
-        font-size: 2rem;
-        font-weight: bold;
-        letter-spacing: 0.1em;
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
         margin: 0;
+        color: #FF0000; /* Stark Red Banner */
+        text-transform: uppercase;
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
     }
 
     .search-box {
@@ -51,6 +60,20 @@
         border-color: #FFFFFF;
     }
 
+    /* Secret link to Under Construction page */
+    .secret-btn {
+        color: #111111; /* Very dark grey, almost invisible */
+        text-decoration: none;
+        margin-left: 1rem;
+        font-weight: bold;
+        cursor: crosshair;
+        transition: color 0.2s;
+    }
+
+    .secret-btn:hover {
+        color: #555555;
+    }
+
     .site-nav {
         display: flex;
         gap: 2rem;
@@ -63,11 +86,11 @@
     .site-nav a {
         color: #AAAAAA;
         text-decoration: none;
+        font-weight: bold;
     }
 
     .site-nav a:hover, .site-nav a.active {
         color: #FFFFFF;
-        font-weight: bold;
     }
 
     /* --- LAYOUT WRAPPER --- */
@@ -77,7 +100,7 @@
         max-width: 1200px;
     }
 
-    /* --- SIDEBAR / BACKLOG --- */
+    /* --- SIDEBAR / INDEX --- */
     .sidebar {
         width: 250px;
         flex-shrink: 0;
@@ -88,7 +111,8 @@
         border-bottom: 1px solid #555555;
         padding-bottom: 0.5rem;
         margin-top: 0;
-        color: #DDDDDD;
+        color: #FFFFFF;
+        font-weight: bold;
     }
 
     .backlog-list {
@@ -96,18 +120,19 @@
         padding: 0;
         margin: 0;
         font-size: 0.85rem;
-        color: #888888;
+        color: #CCCCCC;
     }
 
     .backlog-list li {
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .backlog-list .date {
         display: block;
         font-size: 0.75rem;
-        color: #555555;
+        color: #777777;
         margin-bottom: 0.2rem;
+        font-weight: bold;
     }
 
     .backlog-list .current {
@@ -119,18 +144,16 @@
         content: "> ";
     }
 
-    .backlog-list .pending {
-        color: #555555;
-        font-style: italic;
-    }
-
     /* --- MAIN CONTENT & LIST --- */
     .main-content {
         flex-grow: 1;
-        min-width: 0; /* Prevents flex blowout */
+        min-width: 0; 
     }
 
     .list-container {
+        /* Raw Data Font Enforced Here */
+        font-family: "Courier New", Courier, monospace;
+        
         border: 1px solid #555555;
         max-height: 60vh;
         width: 100%;
@@ -205,8 +228,9 @@
         color: #FFFFFF;
         border: 1px solid #555555;
         padding: 0.5rem 1rem;
-        font-family: inherit;
-        font-size: 1rem;
+        font-family: inherit; /* Inherits Helvetica/Roboto */
+        font-size: 0.9rem;
+        font-weight: bold;
         cursor: pointer;
     }
 
@@ -232,7 +256,7 @@
         padding-top: 1rem;
         border-top: 1px dotted #333333;
         font-size: 0.75rem;
-        color: #444444;
+        color: #666666;
         display: flex;
         justify-content: space-between;
     }
@@ -243,39 +267,38 @@
     <!-- Header Section -->
     <header class="site-header">
         <h1 class="site-title">VIDARR.IS</h1>
-        <div class="search-box">
-            <input type="text" placeholder="[ SEARCH DATABASE_ ]">
+        <div class="header-controls">
+            <div class="search-box">
+                <input type="text" placeholder="[ SEARCH DATABASE ]">
+            </div>
+            <!-- Secret button is the underscore right here -->
+            <a href="https://vidarr.is/underconstruction.html" class="secret-btn">_</a>
         </div>
     </header>
 
     <!-- Navigation Menu -->
     <nav class="site-nav">
-        <a href="#" class="active">[ PUBLICATION LOG ]</a>
-        <a href="#">[ ABOUT DIRECTIVE ]</a>
-        <a href="#">[ SECURE DROPBOX ]</a>
-        <a href="#">[ PGP KEY ]</a>
+        <a href="#" class="active">PUBLICATION LOG</a>
+        <a href="#">ABOUT DIRECTIVE</a>
+        <a href="#">SECURE DROPBOX</a>
+        <a href="#">PGP KEY</a>
     </nav>
 
     <div class="layout-wrapper">
         
-        <!-- Sidebar / Backlog Context -->
+        <!-- Sidebar / Context -->
         <aside class="sidebar">
-            <h3>// SYSTEM BACKLOG</h3>
+            <h3>INDEX</h3>
             <ul class="backlog-list">
                 <li>
                     <span class="date">SYS_INIT_00</span>
                     SERVER PROVISIONED<br>
-                    <span style="color:#444;">[ ROOT ACCESS SECURED ]</span>
+                    <span style="color:#666; font-size: 0.8rem;">ROOT ACCESS SECURED</span>
                 </li>
                 <li class="current">
                     <span class="date">PUBLICATION_01</span>
                     THE LIST (503 RECORDS)<br>
-                    <span style="color:#AAA;">[ ACTIVE ]</span>
-                </li>
-                <li class="pending">
-                    <span class="date">PUBLICATION_02</span>
-                    MANIFESTO.MP4<br>
-                    <span style="color:#555;">[ AWAITING DEPLOYMENT ]</span>
+                    <span style="color:#AAA; font-size: 0.8rem;">ACTIVE</span>
                 </li>
             </ul>
         </aside>
@@ -289,12 +312,12 @@
             </div>
 
             <div class="action-bar">
-                <button class="action-btn">[ ⎙ PRINT LOG ]</button>
-                <button class="action-btn">[ ↓ EXPORT .CSV ]</button>
+                <button class="action-btn">PRINT LOG</button>
+                <button class="action-btn">EXPORT .CSV</button>
             </div>
 
             <div class="end-log">
-                [ END OF LOG ]
+                END OF LOG
             </div>
         </main>
         
