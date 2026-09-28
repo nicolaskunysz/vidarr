@@ -59,6 +59,16 @@
         outline: none;
         border-color: #FFFFFF;
     }
+    
+    /* Result Counter */
+    .result-count {
+        color: #FF0000;
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        margin-left: 1rem;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
 
     /* Secret link to Under Construction page */
     .secret-btn {
@@ -159,10 +169,11 @@
         max-height: 60vh;
         width: 100%;
         overflow-y: scroll;
-        overflow-x: auto; /* Allows horizontal scroll on narrow screens */
+        overflow-x: auto; 
         padding: 1rem;
         margin-bottom: 1.5rem;
         background-color: #030303;
+        position: relative;
     }
 
     .list-container::-webkit-scrollbar {
@@ -208,7 +219,7 @@
         list-style-type: none;
         padding: 0;
         margin: 0; 
-        min-width: 800px; /* Forces horizontal scrolling on mobile to keep data readable */
+        min-width: 800px; 
     }
 
     .name-list li {
@@ -216,6 +227,18 @@
         border-bottom: 1px dashed #333333; 
         display: flex;
         justify-content: space-between;
+        transition: background-color 0.1s, color 0.1s;
+    }
+
+    /* Highlight style when searching: Black text on White background */
+    .name-list li.highlight {
+        background-color: #FFFFFF;
+        border-bottom: 1px solid #FFFFFF;
+    }
+
+    .name-list li.highlight span {
+        color: #000000 !important;
+        font-weight: bold;
     }
 
     .col-name { width: 25%; color: #FFFFFF; font-weight: normal; }
@@ -313,6 +336,7 @@
         .header-controls {
             width: 100%;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
 
         .search-box {
@@ -340,9 +364,12 @@
         <h1 class="site-title">VIDARR.IS</h1>
         <div class="header-controls">
             <div class="search-box">
-                <input type="text" placeholder="SEARCH">
+                <input type="text" id="searchInput" placeholder="SEARCH">
             </div>
-            <!-- Secret button is now a cross (+) -->
+            <!-- Dynamic Result Counter -->
+            <span id="resultCount" class="result-count"></span>
+            
+            <!-- Secret button is a cross (+) -->
             <a href="https://vidarr.is/underconstruction.html" class="secret-btn">+</a>
         </div>
     </header>
@@ -376,7 +403,7 @@
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <div class="list-container">
+            <div class="list-container" id="listScrollContainer">
                 <ul class="name-list" id="target-list">
                     <!-- JavaScript will populate the 503 names here -->
                 </ul>
@@ -402,6 +429,9 @@
 
     <script>
         const listContainer = document.getElementById('target-list');
+        const listScrollContainer = document.getElementById('listScrollContainer');
+        const searchInput = document.getElementById('searchInput');
+        const resultCount = document.getElementById('resultCount');
         
         const firstNames = ["Jón", "Gunnar", "Ólafur", "Einar", "Magnús"]; 
         const lastNames = ["Jónsson", "Guðmundsson", "Sigurðsson", "Þórðarson", "Pálsson"];
@@ -433,6 +463,7 @@
             return `${day}${month}${year}-${randomEnd}`;
         }
 
+        // Generate the 503 list items
         for(let i = 1; i <= 503; i++) {
             const li = document.createElement('li');
             
@@ -463,7 +494,49 @@
             listContainer.appendChild(li);
         }
 
-        listContainer.scrollTop = listContainer.scrollHeight;
+        // Scroll to bottom by default
+        listScrollContainer.scrollTop = listScrollContainer.scrollHeight;
+
+        // Active Search Bar Functionality (Highlight without hiding)
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toUpperCase();
+            const items = listContainer.getElementsByTagName('li');
+            let matchCount = 0;
+            let firstMatch = null;
+            
+            for (let i = 0; i < items.length; i++) {
+                const nameText = items[i].querySelector('.col-name').textContent;
+                
+                // Keep the item visible regardless
+                items[i].style.display = 'flex';
+                
+                if (searchTerm.length === 0) {
+                    // Reset styling when search is empty
+                    items[i].classList.remove('highlight');
+                } else if (nameText.toUpperCase().includes(searchTerm)) {
+                    // Highlight match
+                    items[i].classList.add('highlight');
+                    matchCount++;
+                    if (!firstMatch) firstMatch = items[i];
+                } else {
+                    // Un-highlight non-matches
+                    items[i].classList.remove('highlight');
+                }
+            }
+            
+            // Update the results counter and auto-scroll
+            if (searchTerm.length === 0) {
+                resultCount.textContent = "";
+            } else {
+                resultCount.textContent = `[ ${matchCount} RESULTS ]`;
+                
+                // Auto-scroll to the first match if it exists
+                if (firstMatch) {
+                    // Offset handles the padding of the container
+                    listScrollContainer.scrollTop = firstMatch.offsetTop - listScrollContainer.offsetTop;
+                }
+            }
+        });
     </script>
 </body>
 </html>
