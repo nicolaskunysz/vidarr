@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIDARR.IS // THE LIST (MANIFESTO OVERLAY)</title>
+<style>
+    /* Global UI Font - Helvetica/Roboto */
+    body {
+        background-color: #000000;
+        color: #FFFFFF;
+        font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+        margin: 0;
+        padding: 2rem 4rem;
+        line-height: 1.5;
+    }
+
+    /* --- SITE HEADER & NAV --- */
+    .site-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 2px solid #FFFFFF;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        max-width: 1200px;
+    }
+
+    .site-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        margin: 0;
+        color: #FF0000; 
+        text-transform: uppercase;
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-box input {
+        background-color: #000000;
+        color: #FFFFFF;
+        border: 1px solid #555555;
+        padding: 0.5rem 1rem;
+        font-family: inherit;
+        width: 250px;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: #FFFFFF;
+    }
+    
+    /* Result Counter */
+    .result-count {
+        color: #FF0000;
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        margin-left: 1rem;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    /* Secret link to Under Construction page */
+    .secret-btn {
+        color: #555555; 
+        opacity: 0; 
+        text-decoration: none;
+        margin-left: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: crosshair;
+        transition: opacity 0.2s;
+    }
+
+    .secret-btn:hover {
+        opacity: 1; 
+    }
+
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        max-width: 1200px;
+        font-size: 0.9rem;
+        color: #AAAAAA;
+    }
+
+    .site-nav a {
+        color: #AAAAAA;
+        text-decoration: none;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .site-nav a:hover, .site-nav a.active {
+        color: #FFFFFF;
+    }
+
+    /* --- LAYOUT WRAPPER --- */
+    .layout-wrapper {
+        display: flex;
+        gap: 3rem;
+        max-width: 1200px;
+    }
+
+    /* --- SIDEBAR / INDEX & ID CARD --- */
+    .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .sidebar h3 {
+        font-size: 1rem;
+        border-bottom: 1px solid #555555;
+        padding-bottom: 0.5rem;
+        margin-top: 0;
+        color: #FFFFFF;
+        font-weight: bold;
+    }
+
+    .backlog-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.85rem;
+        color: #CCCCCC;
+    }
+
+    .backlog-list li {
+        margin-bottom: 1.5rem;
+    }
+
+    .backlog-list .date {
+        display: block;
+        font-size: 0.75rem;
+        color: #777777;
+        margin-bottom: 0.2rem;
+        font-weight: bold;
+    }
+
+    .backlog-list .current {
+        color: #FFFFFF;
+        font-weight: bold;
+    }
+
+    .backlog-list .current::before {
+        content: "> ";
+    }
+
+    /* Fixed ID Card in Sidebar */
+    #id-card {
+        background-color: #050505;
+        border: 1px solid #555;
+        box-shadow: 4px 4px 0px rgba(255, 0, 0, 0.2);
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    .id-wrapper {
+        display: flex;
+        flex-direction: column; 
+        gap: 15px;
+    }
+
+    .id-photo-container {
+        width: 100%;
+        height: 160px;
+        background-color: #111;
+        border: 1px dashed #444;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        font-size: 0.7rem;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    #card-photo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none; 
+    }
+
+    .id-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .id-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .id-label {
+        color: #777;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .id-value {
+        color: #FFF;
+        font-size: 0.85rem;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .id-value.red {
+        color: #FF0000;
+    }
+
+    /* --- MAIN CONTENT & LIST --- */
+    .main-content {
+        flex-grow: 1;
+        min-width: 0; 
+    }
+
+    .list-container {
+        font-family: "Courier New", Courier, monospace;
+        border: 1px solid #555555;
+        max-height: 60vh;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: auto; 
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background-color: #030303;
+        position: relative;
+    }
+
+    .list-container::-webkit-scrollbar {
+        width: 24px;
+        height: 24px;
+        background: #111111;
+        border-left: 1px solid #444444;
+        border-top: 1px solid #444444;
+    }
+    .list-container::-webkit-scrollbar-track {
+        background: #050505;
+        border-left: 1px solid #333333;
+        border-top: 1px solid #333333;
+    }
+    .list-container::-webkit-scrollbar-thumb {
+        background: #DDDDDD;
+        border: 3px solid #000000;
+        min-height: 40px;
+        min-width: 40px;
+    }
+    .list-container::-webkit-scrollbar-thumb:hover {
+        background: #FFFFFF;
+    }
+    
+    .list-container::-webkit-scrollbar-button:vertical:decrement,
+    .list-container::-webkit-scrollbar-button:horizontal:decrement {
+        display: block;
+        background-color: #333333;
+        border: 2px solid #000000;
+        cursor: pointer;
+    }
+    .list-container::-webkit-scrollbar-button:vertical:decrement {
+        height: 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="12,7 18,17 6,17" fill="%23FFFFFF"/></svg>');
+    }
+    .list-container::-webkit-scrollbar-button:horizontal:decrement {
+        width: 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="7,12 17,6 17,18" fill="%23FFFFFF"/></svg>');
+    }
+
+    .list-container::-webkit-scrollbar-button:vertical:increment,
+    .list-container::-webkit-scrollbar-button:horizontal:increment {
+        display: block;
+        background-color: #333333;
+        border: 2px solid #000000;
+        cursor: pointer;
+    }
+    .list-container::-webkit-scrollbar-button:vertical:increment {
+        height: 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="12,17 6,7 18,7" fill="%23FFFFFF"/></svg>');
+    }
+    .list-container::-webkit-scrollbar-button:horizontal:increment {
+        width: 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="17,12 7,6 7,18" fill="%23FFFFFF"/></svg>');
+    }
+
+    .name-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0; 
+        min-width: 950px; 
+    }
+
+    .name-list li {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px dashed #333333; 
+        border-left: 3px solid transparent; 
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        white-space: nowrap; 
+        cursor: pointer; 
+        user-select: none;
+    }
+
+    .name-list li:hover {
+        background-color: #111111;
+    }
+
+    .name-list li.selected {
+        background-color: #1A1A1A;
+        border-left: 3px solid #FF0000;
+    }
+
+    .name-list li.highlight {
+        background-color: #FFFFFF;
+        border-bottom: 1px solid #FFFFFF;
+    }
+    .name-list li.highlight span {
+        color: #000000 !important;
+        font-weight: bold;
+    }
+    
+    .name-list li.highlight.selected {
+        border-left: 3px solid #FF0000;
+        background-color: #DDDDDD; 
+    }
+
+    .col-name { width: 28%; color: #FFFFFF; font-weight: normal; white-space: nowrap; pointer-events: none; }
+    .col-kt { width: 14%; color: #FFFFFF; white-space: nowrap; pointer-events: none; }
+    .col-job { width: 20%; color: #FFFFFF; white-space: nowrap; pointer-events: none; }
+    .col-offense { width: 23%; color: #FFFFFF; white-space: nowrap; pointer-events: none; } 
+    .col-date { width: 15%; text-align: right; color: #FFFFFF; white-space: nowrap; pointer-events: none; }
+
+    .action-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 4rem;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        background: transparent;
+        color: #FFFFFF;
+        border: 1px solid #555555;
+        padding: 0.5rem 1rem;
+        font-family: inherit; 
+        font-size: 0.9rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .action-btn:hover {
+        background: #333333;
+        color: #FFFFFF;
+    }
+
+    .end-log {
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-top: 2px solid #FFFFFF;
+        padding-top: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* --- SITE FOOTER --- */
+    .site-footer {
+        max-width: 1200px;
+        margin-top: 4rem;
+        padding-top: 1rem;
+        border-top: 1px dotted #333333;
+        font-size: 0.75rem;
+        color: #666666;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* --- VIDEO OVERLAY & ANIMATIONS --- */
+    #video-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 20000;
+        display: flex; /* Displayed by default for this scene */
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        /* Smooth background fade in */
+        background: rgba(0, 0, 0, 0.85); 
+        animation: fadeOverlayIn 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeOverlayIn {
+        from { background: rgba(0, 0, 0, 0); }
+        to { background: rgba(0, 0, 0, 0.85); }
+    }
+
+    .video-container {
+        border: 2px solid #555;
+        box-shadow: 0px 0px 40px rgba(255, 0, 0, 0.15); /* Subtle red glow */
+        background: #000;
+        padding: 10px;
+        width: 80%;
+        max-width: 1000px;
+        transform-origin: center center;
+        /* Hacker terminal expansion animation */
+        animation: expandTerminal 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    @keyframes expandTerminal {
+        0% {
+            transform: scaleX(0.01) scaleY(0.01);
+            opacity: 0;
+        }
+        40% {
+            transform: scaleX(1) scaleY(0.01);
+            opacity: 1;
+        }
+        100% {
+            transform: scaleX(1) scaleY(1);
+            opacity: 1;
+        }
+    }
+
+    .video-header {
+        text-align: left;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #FFFFFF;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.9rem;
+    }
+
+    .video-header .blink {
+        animation: blinker 1s linear infinite;
+        color: #FF0000;
+    }
+
+    @keyframes blinker {
+        50% { opacity: 0; }
+    }
+
+    video {
+        width: 100%;
+        display: block;
+        background: #111;
+        outline: none;
+    }
+
+    /* --- DIRECTOR'S CONTROL MENU --- */
+    #director-menu {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #555555;
+        padding: 15px 20px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        color: #AAAAAA;
+        z-index: 30000;
+        display: none; /* Hidden by default now */
+        box-shadow: -4px -4px 0px rgba(255, 255, 255, 0.1);
+    }
+    #director-menu h4 {
+        color: #FFFFFF;
+        margin-top: 0;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+    }
+    #director-menu ul {
+        list-style: none;
+        padding: 0; margin: 0;
+    }
+    #director-menu li {
+        margin-bottom: 5px;
+    }
+    #director-menu .key {
+        color: #FFFFFF;
+        font-weight: bold;
+        display: inline-block;
+        width: 30px;
+    }
+
+    /* --- MONOCHROME OVERRIDE CLASSES --- */
+    body.monochrome .site-title { color: #FFFFFF; }
+    body.monochrome .result-count { color: #FFFFFF; }
+    body.monochrome .id-value.red { color: #FFFFFF; }
+    body.monochrome .name-list li.selected { border-left-color: #FFFFFF; }
+    body.monochrome .name-list li.highlight.selected { border-left-color: #000000; }
+    body.monochrome #id-card { box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.2); }
+    body.monochrome .video-container { box-shadow: 0px 0px 40px rgba(255, 255, 255, 0.15); }
+    body.monochrome .video-header .blink { color: #FFFFFF; }
+
+</style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="site-header">
+        <h1 class="site-title">VIDARR.IS</h1>
+        <div class="header-controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="SEARCH">
+            </div>
+            <!-- Dynamic Result Counter -->
+            <span id="resultCount" class="result-count"></span>
+            
+            <!-- Secret button is a cross (+) -->
+            <a href="underconstruction.html" class="secret-btn">+</a>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="site-nav">
+        <a href="#" class="active">PUBLICATION LOG</a>
+        <a href="#">ABOUT DIRECTIVE</a>
+        <a href="#">SECURE DROPBOX</a>
+        <a href="#">PGP KEY</a>
+    </nav>
+
+    <div class="layout-wrapper">
+        
+        <!-- Sidebar / Context -->
+        <aside class="sidebar">
+            <div>
+                <h3>INDEX</h3>
+                <ul class="backlog-list">
+                    <li>
+                        <span class="date">SYS_INIT_00</span>
+                        SERVER PROVISIONED<br>
+                        <span style="color:#666; font-size: 0.8rem;">ROOT ACCESS SECURED</span>
+                    </li>
+                    <li class="current">
+                        <span class="date">PUBLICATION_01</span>
+                        THE LIST (503 RECORDS)<br>
+                        <span style="color:#AAA; font-size: 0.8rem;">ACTIVE</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Fixed ID Card Panel -->
+            <div id="id-card">
+                <div class="id-wrapper">
+                    <!-- Photo Container with Fallback Text -->
+                    <div class="id-photo-container">
+                        <img id="card-photo-img" src="" alt="Subject Photo">
+                        <div id="card-photo-text">[ IMAGE ]<br>[ MISSING ]</div>
+                    </div>
+                    
+                    <div class="id-details">
+                        <div class="id-field">
+                            <span class="id-label">Subject ID</span>
+                            <span class="id-value" id="card-id">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Name</span>
+                            <span class="id-value" id="card-name">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Kennitala</span>
+                            <span class="id-value" id="card-kt">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Designation</span>
+                            <span class="id-value" id="card-job">---</span>
+                        </div>
+                        <div class="id-field">
+                            <span class="id-label">Conviction</span>
+                            <span class="id-value red" id="card-offense">---</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="list-container" id="listScrollContainer">
+                <ul class="name-list" id="target-list">
+                    <!-- JavaScript will populate the 503 names here -->
+                </ul>
+            </div>
+
+            <div class="action-bar">
+                <button class="action-btn">PRINT LOG</button>
+                <button class="action-btn">EXPORT .CSV</button>
+            </div>
+
+            <div class="end-log">
+                END OF LOG
+            </div>
+        </main>
+        
+    </div>
+
+    <!-- Discreet Footer -->
+    <footer class="site-footer">
+        <span>SYS_VER: 1.0.4.88 // LOC: UNKNOWN // CONNECTION SECURE</span>
+        <span>ENCRYPTION: AES-256 (GCM)</span>
+    </footer>
+
+    <!-- Video Overlay Layer -->
+    <div id="video-overlay">
+        <div class="video-container">
+            <div class="video-header">
+                > DECRYPTING MANIFESTO.MP4 <span class="blink">...</span>
+            </div>
+            <!-- Standard HTML5 Video Player -->
+            <!-- Add the exact path to your video file in the src attribute -->
+            <video id="manifesto-video" src="YOUR_VIDEO_FILE_HERE.mp4" controls preload="metadata">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <!-- Director Control Menu -->
+    <div id="director-menu">
+        <h4>DIRECTOR CONTROLS (SCENE 2)</h4>
+        <ul>
+            <li><span class="key">h</span> Toggle this menu</li>
+            <li><span class="key">v</span> Toggle Video Overlay</li>
+            <li><span class="key">m</span> Toggle Monochrome (B&W)</li>
+        </ul>
+        <div style="margin-top: 10px; border-top: 1px dashed #444; padding-top: 5px; color:#777;">
+            Use the built-in video controls to play/pause/skip.
+        </div>
+    </div>
+
+    <script>
+        const listContainer = document.getElementById('target-list');
+        const listScrollContainer = document.getElementById('listScrollContainer');
+        const searchInput = document.getElementById('searchInput');
+        const resultCount = document.getElementById('resultCount');
+        
+        // ID Card Elements
+        const cardId = document.getElementById('card-id');
+        const cardName = document.getElementById('card-name');
+        const cardKt = document.getElementById('card-kt');
+        const cardJob = document.getElementById('card-job');
+        const cardOffense = document.getElementById('card-offense');
+        const cardPhotoImg = document.getElementById('card-photo-img');
+        const cardPhotoText = document.getElementById('card-photo-text');
+
+        let selectedLi = null;
+
+        // --- EDIT THESE WHEN YOU RECEIVE THE SCRIPT FROM THE WRITERS --- //
+        const scriptedEntries = {
+            12:  { name: "[ NAME_01 ]", kt: "000000-0001", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "01 JAN 2020", photo: "" },
+            28:  { name: "[ NAME_02 ]", kt: "000000-0002", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "15 FEB 2019", photo: "" },
+            44:  { name: "[ NAME_03 ]", kt: "000000-0003", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "22 MAR 2021", photo: "" },
+            60:  { name: "[ NAME_04 ]", kt: "000000-0004", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "05 APR 2018", photo: "" },
+            76:  { name: "[ NAME_05 ]", kt: "000000-0005", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "11 MAY 2022", photo: "" },
+            92:  { name: "[ NAME_06 ]", kt: "000000-0006", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "09 JUN 2017", photo: "" },
+            108: { name: "[ NAME_07 ]", kt: "000000-0007", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "14 JUL 2023", photo: "" },
+            124: { name: "[ NAME_08 ]", kt: "000000-0008", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "30 AUG 2016", photo: "" },
+            140: { name: "[ NAME_09 ]", kt: "000000-0009", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "18 SEP 2020", photo: "" },
+            156: { name: "[ NAME_10 ]", kt: "000000-0010", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "02 OCT 2021", photo: "" },
+            172: { name: "[ NAME_11 ]", kt: "000000-0011", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "21 NOV 2018", photo: "" },
+            188: { name: "[ NAME_12 ]", kt: "000000-0012", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "10 DEC 2015", photo: "" },
+            204: { name: "[ NAME_13 ]", kt: "000000-0013", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "08 JAN 2022", photo: "" },
+            220: { name: "[ NAME_14 ]", kt: "000000-0014", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "17 FEB 2017", photo: "" },
+            236: { name: "[ NAME_15 ]", kt: "000000-0015", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "03 MAR 2019", photo: "" },
+            252: { name: "[ NAME_16 ]", kt: "000000-0016", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "29 APR 2020", photo: "" },
+            268: { name: "[ NAME_17 ]", kt: "000000-0017", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "12 MAY 2016", photo: "" },
+            284: { name: "[ NAME_18 ]", kt: "000000-0018", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "25 JUN 2021", photo: "" },
+            300: { name: "[ NAME_19 ]", kt: "000000-0019", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "07 JUL 2018", photo: "" },
+            316: { name: "[ NAME_20 ]", kt: "000000-0020", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "19 AUG 2023", photo: "" },
+            332: { name: "[ NAME_21 ]", kt: "000000-0021", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "04 SEP 2017", photo: "" },
+            348: { name: "[ NAME_22 ]", kt: "000000-0022", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "28 OCT 2020", photo: "" },
+            364: { name: "[ NAME_23 ]", kt: "000000-0023", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "11 NOV 2019", photo: "" },
+            380: { name: "[ NAME_24 ]", kt: "000000-0024", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "23 DEC 2021", photo: "" },
+            396: { name: "[ NAME_25 ]", kt: "000000-0025", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "06 JAN 2016", photo: "" },
+            412: { name: "[ NAME_26 ]", kt: "000000-0026", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "14 FEB 2022", photo: "" },
+            428: { name: "[ NAME_27 ]", kt: "000000-0027", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "27 MAR 2018", photo: "" },
+            444: { name: "[ NAME_28 ]", kt: "000000-0028", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "02 APR 2023", photo: "" },
+            460: { name: "[ NAME_29 ]", kt: "000000-0029", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "18 MAY 2017", photo: "" },
+            476: { name: "[ NAME_30 ]", kt: "000000-0030", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "31 JUN 2020", photo: "" },
+            // The Chief of Police is locked in at #503
+            503: { name: "ARNAR VIGLUNDSSON", kt: "140865-2289", job: "CHIEF OF POLICE", offense: "RAPIST", date: "UNDISCLOSED", photo: "" }
+        };
+        // --------------------------------------------------------------- //
+
+        const firstNames = ["Jón", "Gunnar", "Ólafur", "Einar", "Magnús"]; 
+        const lastNames = ["Jónsson", "Guðmundsson", "Sigurðsson", "Þórðarson", "Pálsson"];
+        const jobs = ["Judge", "Lawyer", "Politician", "Artist", "CEO", "Surgeon", "Producer", "Banker"];
+        const offenses = ["Rapist", "Child Molester", "Sexual Assault", "Predator", "Statutory Rape"];
+        
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomDate() {
+            const start = new Date(1990, 0, 1);
+            const end = new Date(2023, 11, 31);
+            const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            
+            const day = String(date.getDate()).padStart(2, '0');
+            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sept", "oct", "nov", "dec"];
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${day} ${month} ${year}`; 
+        }
+
+        function getFakeKennitala() {
+            const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+            const year = String(Math.floor(Math.random() * 50) + 40); 
+            const randomEnd = String(Math.floor(Math.random() * 900) + 100) + '9'; 
+            return `${day}${month}${year}-${randomEnd}`;
+        }
+
+        // Generate the 503 list items
+        for(let i = 1; i <= 503; i++) {
+            const li = document.createElement('li');
+            const formattedId = String(i).padStart(3, '0');
+            
+            let name, kennitala, job, offense, date, photo;
+
+            if (scriptedEntries[i]) {
+                name = scriptedEntries[i].name;
+                kennitala = scriptedEntries[i].kt;
+                job = scriptedEntries[i].job;
+                offense = scriptedEntries[i].offense;
+                date = scriptedEntries[i].date;
+                photo = scriptedEntries[i].photo; 
+            } else {
+                name = `${getRandom(firstNames)} ${getRandom(lastNames)}`.toUpperCase();
+                kennitala = getFakeKennitala();
+                job = getRandom(jobs).toUpperCase();
+                offense = getRandom(offenses).toUpperCase();
+                date = getRandomDate();
+                photo = ""; 
+            }
+
+            li.dataset.id = formattedId;
+            li.dataset.name = name;
+            li.dataset.kt = kennitala;
+            li.dataset.job = job;
+            li.dataset.offense = offense;
+            li.dataset.photo = photo; 
+
+            li.innerHTML = `
+                <span class="col-name">${formattedId} - ${name}</span>
+                <span class="col-kt">${kennitala}</span>
+                <span class="col-job">${job}</span>
+                <span class="col-offense">${offense}</span>
+                <span class="col-date">${date}</span>
+            `;
+            
+            listContainer.appendChild(li);
+        }
+
+        // --- SELECTION LOGIC --- //
+        function selectRow(li) {
+            if (selectedLi) {
+                selectedLi.classList.remove('selected');
+            }
+            selectedLi = li;
+            li.classList.add('selected');
+            
+            cardId.textContent = li.dataset.id;
+            cardName.textContent = li.dataset.name;
+            cardKt.textContent = li.dataset.kt;
+            cardJob.textContent = li.dataset.job;
+            cardOffense.textContent = li.dataset.offense;
+
+            const photoUrl = li.dataset.photo;
+            if (photoUrl && photoUrl !== "") {
+                cardPhotoImg.src = photoUrl;
+                cardPhotoImg.style.display = 'block'; 
+                cardPhotoText.style.display = 'none'; 
+            } else {
+                cardPhotoImg.src = "";
+                cardPhotoImg.style.display = 'none';  
+                cardPhotoText.style.display = 'block'; 
+            }
+        }
+
+        // Click Selection
+        listContainer.addEventListener('click', function(e) {
+            const li = e.target.closest('li');
+            if (!li) return;
+            selectRow(li);
+        });
+
+        // Arrow Key Navigation
+        document.addEventListener('keydown', function(e) {
+            if(document.activeElement === searchInput) return;
+            if (!selectedLi) return;
+            
+            const key = e.key.toLowerCase();
+            
+            if (key === 'arrowdown') {
+                e.preventDefault(); 
+                let next = selectedLi.nextElementSibling;
+                while(next && next.style.display === 'none') {
+                    next = next.nextElementSibling;
+                }
+                if (next) {
+                    next.scrollIntoView({ block: 'center' }); 
+                    selectRow(next);
+                }
+            } else if (key === 'arrowup') {
+                e.preventDefault(); 
+                let prev = selectedLi.previousElementSibling;
+                while(prev && prev.style.display === 'none') {
+                    prev = prev.previousElementSibling;
+                }
+                if (prev) {
+                    prev.scrollIntoView({ block: 'center' });
+                    selectRow(prev);
+                }
+            }
+        });
+
+        // Auto-select the first entry on page load
+        const firstEntry = listContainer.querySelector('li');
+        if (firstEntry) {
+            selectRow(firstEntry);
+        }
+
+        // --- DIRECTOR CONTROLS FOR SCENE 2 --- //
+        const dirMenu = document.getElementById('director-menu');
+        const videoOverlay = document.getElementById('video-overlay');
+        const manifestoVideo = document.getElementById('manifesto-video');
+
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement === searchInput) return;
+
+            const key = e.key.toLowerCase();
+
+            switch(key) {
+                case 'h':
+                    // Toggle menu visibility
+                    dirMenu.style.display = (dirMenu.style.display === 'none' || dirMenu.style.display === '') ? 'block' : 'none';
+                    break;
+                case 'm':
+                    // Monochrome toggle
+                    document.body.classList.toggle('monochrome');
+                    break;
+                case 'v':
+                    // Toggle Video Overlay
+                    if (videoOverlay.style.display === 'none' || videoOverlay.style.display === '') {
+                        videoOverlay.style.display = 'flex';
+                    } else {
+                        videoOverlay.style.display = 'none';
+                        manifestoVideo.pause(); // Stop playing if they hide it
+                    }
+                    break;
+            }
+        });
+
+    </script>
+</body>
+</html>
