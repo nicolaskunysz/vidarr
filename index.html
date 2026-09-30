@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIDARR.IS // THE LIST</title>
+<title>VIDARR.IS</title>
 <style>
     /* Global UI Font - Helvetica/Roboto */
     body {
@@ -72,17 +72,18 @@
 
     /* Secret link to Under Construction page */
     .secret-btn {
-        color: #111111; 
+        color: #555555; 
+        opacity: 0; /* Completely hidden by default */
         text-decoration: none;
         margin-left: 1rem;
         font-size: 1.2rem;
         font-weight: bold;
         cursor: crosshair;
-        transition: color 0.2s;
+        transition: opacity 0.2s;
     }
 
     .secret-btn:hover {
-        color: #555555;
+        opacity: 1; /* Appears only when hovered */
     }
 
     .site-nav {
@@ -173,11 +174,11 @@
 
     .id-wrapper {
         display: flex;
-        flex-direction: column; /* Stacked for a dossier look */
+        flex-direction: column; 
         gap: 15px;
     }
 
-    .id-photo {
+    .id-photo-container {
         width: 100%;
         height: 160px;
         background-color: #111;
@@ -189,6 +190,14 @@
         color: #555;
         font-size: 0.7rem;
         text-align: center;
+        overflow: hidden;
+    }
+
+    #card-photo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none; 
     }
 
     .id-details {
@@ -305,27 +314,24 @@
     .name-list li {
         padding: 0.5rem 1rem;
         border-bottom: 1px dashed #333333; 
-        border-left: 3px solid transparent; /* Reserved for selection bar */
+        border-left: 3px solid transparent; 
         display: flex;
         justify-content: space-between;
         align-items: center;
         white-space: nowrap; 
-        cursor: pointer; /* Indicates it can be clicked */
+        cursor: pointer; 
         user-select: none;
     }
 
-    /* Hover effect */
     .name-list li:hover {
         background-color: #111111;
     }
 
-    /* Selection Highlight Bar */
     .name-list li.selected {
         background-color: #1A1A1A;
         border-left: 3px solid #FF0000;
     }
 
-    /* Search Highlight: Black text on White background */
     .name-list li.highlight {
         background-color: #FFFFFF;
         border-bottom: 1px solid #FFFFFF;
@@ -335,7 +341,6 @@
         font-weight: bold;
     }
     
-    /* Keep the red selection border visible even if search highlighted */
     .name-list li.highlight.selected {
         border-left: 3px solid #FF0000;
         background-color: #DDDDDD; 
@@ -394,69 +399,68 @@
         gap: 0.5rem;
     }
 
+    /* --- DIRECTOR'S CONTROL MENU --- */
+    #director-menu {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #555555;
+        padding: 15px 20px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        color: #AAAAAA;
+        z-index: 10000;
+        display: block; /* Shown by default now */
+        box-shadow: -4px -4px 0px rgba(255, 255, 255, 0.1);
+    }
+    #director-menu h4 {
+        color: #FFFFFF;
+        margin-top: 0;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+    }
+    #director-menu ul {
+        list-style: none;
+        padding: 0; margin: 0;
+    }
+    #director-menu li {
+        margin-bottom: 5px;
+    }
+    #director-menu .key {
+        color: #FFFFFF;
+        font-weight: bold;
+        display: inline-block;
+        width: 30px;
+    }
+    .status-highlight { color: #FFFFFF; font-weight: bold; }
+
+    /* --- MONOCHROME OVERRIDE CLASSES --- */
+    body.monochrome .site-title { color: #FFFFFF; }
+    body.monochrome .result-count { color: #FFFFFF; }
+    body.monochrome .id-value.red { color: #FFFFFF; }
+    body.monochrome .name-list li.selected { border-left-color: #FFFFFF; }
+    body.monochrome .name-list li.highlight.selected { border-left-color: #000000; }
+    body.monochrome #id-card { box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.2); }
+
     /* --- ADAPTIVE / MOBILE STYLES --- */
     @media (max-width: 850px) {
-        body {
-            padding: 1.5rem 2rem;
-        }
-
-        .layout-wrapper {
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .sidebar {
-            width: 100%;
-        }
-
-        .backlog-list {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .backlog-list li {
-            margin-bottom: 0;
-        }
-        
-        #id-card {
-            width: 100%;
-            max-width: 400px;
-        }
+        body { padding: 1.5rem 2rem; }
+        .layout-wrapper { flex-direction: column; gap: 2rem; }
+        .sidebar { width: 100%; }
+        .backlog-list { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .backlog-list li { margin-bottom: 0; }
+        #id-card { width: 100%; max-width: 400px; }
     }
-
     @media (max-width: 600px) {
-        body {
-            padding: 1rem;
-        }
-
-        .site-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-
-        .header-controls {
-            width: 100%;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex-grow: 1;
-        }
-
-        .search-box input {
-            width: 100%;
-        }
-
-        .site-nav {
-            gap: 1rem;
-        }
-        
-        .site-title {
-            font-size: 2rem;
-        }
+        body { padding: 1rem; }
+        .site-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        .header-controls { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+        .search-box { flex-grow: 1; }
+        .search-box input { width: 100%; }
+        .site-nav { gap: 1rem; }
+        .site-title { font-size: 2rem; }
     }
 </style>
 </head>
@@ -508,9 +512,12 @@
             <!-- Fixed ID Card Panel -->
             <div id="id-card">
                 <div class="id-wrapper">
-                    <div class="id-photo">
-                        [ IMAGE ]<br>[ MISSING ]
+                    <!-- Photo Container with Fallback Text -->
+                    <div class="id-photo-container">
+                        <img id="card-photo-img" src="" alt="Subject Photo">
+                        <div id="card-photo-text">[ IMAGE ]<br>[ MISSING ]</div>
                     </div>
+                    
                     <div class="id-details">
                         <div class="id-field">
                             <span class="id-label">Subject ID</span>
@@ -563,6 +570,23 @@
         <span>ENCRYPTION: AES-256 (GCM)</span>
     </footer>
 
+    <!-- Director Control Menu -->
+    <div id="director-menu">
+        <h4>DIRECTOR CONTROLS</h4>
+        <ul>
+            <li><span class="key">h</span> Toggle this menu</li>
+            <li><span class="key">p</span> Play / Pause Auto-Scroll <span id="status-play" class="status-highlight">[PAUSED]</span></li>
+            <li><span class="key">f</span> Increase Speed</li>
+            <li><span class="key">s</span> Decrease Speed</li>
+            <li><span class="key">t</span> Jump to Top</li>
+            <li><span class="key">b</span> Jump to Bottom</li>
+            <li><span class="key">m</span> Toggle Monochrome (B&W)</li>
+        </ul>
+        <div style="margin-top: 10px; border-top: 1px dashed #444; padding-top: 5px;">
+            Speed: <span id="status-speed" class="status-highlight">1.0</span> px/frame
+        </div>
+    </div>
+
     <script>
         const listContainer = document.getElementById('target-list');
         const listScrollContainer = document.getElementById('listScrollContainer');
@@ -575,8 +599,47 @@
         const cardKt = document.getElementById('card-kt');
         const cardJob = document.getElementById('card-job');
         const cardOffense = document.getElementById('card-offense');
+        const cardPhotoImg = document.getElementById('card-photo-img');
+        const cardPhotoText = document.getElementById('card-photo-text');
 
         let selectedLi = null;
+
+        // --- EDIT THESE WHEN YOU RECEIVE THE SCRIPT FROM THE WRITERS --- //
+        const scriptedEntries = {
+            12:  { name: "[ NAME_01 ]", kt: "000000-0001", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "01 JAN 2020", photo: "" },
+            28:  { name: "[ NAME_02 ]", kt: "000000-0002", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "15 FEB 2019", photo: "" },
+            44:  { name: "[ NAME_03 ]", kt: "000000-0003", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "22 MAR 2021", photo: "" },
+            60:  { name: "[ NAME_04 ]", kt: "000000-0004", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "05 APR 2018", photo: "" },
+            76:  { name: "[ NAME_05 ]", kt: "000000-0005", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "11 MAY 2022", photo: "" },
+            92:  { name: "[ NAME_06 ]", kt: "000000-0006", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "09 JUN 2017", photo: "" },
+            108: { name: "[ NAME_07 ]", kt: "000000-0007", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "14 JUL 2023", photo: "" },
+            124: { name: "[ NAME_08 ]", kt: "000000-0008", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "30 AUG 2016", photo: "" },
+            140: { name: "[ NAME_09 ]", kt: "000000-0009", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "18 SEP 2020", photo: "" },
+            156: { name: "[ NAME_10 ]", kt: "000000-0010", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "02 OCT 2021", photo: "" },
+            172: { name: "[ NAME_11 ]", kt: "000000-0011", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "21 NOV 2018", photo: "" },
+            188: { name: "[ NAME_12 ]", kt: "000000-0012", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "10 DEC 2015", photo: "" },
+            204: { name: "[ NAME_13 ]", kt: "000000-0013", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "08 JAN 2022", photo: "" },
+            220: { name: "[ NAME_14 ]", kt: "000000-0014", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "17 FEB 2017", photo: "" },
+            236: { name: "[ NAME_15 ]", kt: "000000-0015", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "03 MAR 2019", photo: "" },
+            252: { name: "[ NAME_16 ]", kt: "000000-0016", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "29 APR 2020", photo: "" },
+            268: { name: "[ NAME_17 ]", kt: "000000-0017", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "12 MAY 2016", photo: "" },
+            284: { name: "[ NAME_18 ]", kt: "000000-0018", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "25 JUN 2021", photo: "" },
+            300: { name: "[ NAME_19 ]", kt: "000000-0019", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "07 JUL 2018", photo: "" },
+            316: { name: "[ NAME_20 ]", kt: "000000-0020", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "19 AUG 2023", photo: "" },
+            332: { name: "[ NAME_21 ]", kt: "000000-0021", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "04 SEP 2017", photo: "" },
+            348: { name: "[ NAME_22 ]", kt: "000000-0022", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "28 OCT 2020", photo: "" },
+            364: { name: "[ NAME_23 ]", kt: "000000-0023", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "11 NOV 2019", photo: "" },
+            380: { name: "[ NAME_24 ]", kt: "000000-0024", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "23 DEC 2021", photo: "" },
+            396: { name: "[ NAME_25 ]", kt: "000000-0025", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "06 JAN 2016", photo: "" },
+            412: { name: "[ NAME_26 ]", kt: "000000-0026", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "14 FEB 2022", photo: "" },
+            428: { name: "[ NAME_27 ]", kt: "000000-0027", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "27 MAR 2018", photo: "" },
+            444: { name: "[ NAME_28 ]", kt: "000000-0028", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "02 APR 2023", photo: "" },
+            460: { name: "[ NAME_29 ]", kt: "000000-0029", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "18 MAY 2017", photo: "" },
+            476: { name: "[ NAME_30 ]", kt: "000000-0030", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "31 JUN 2020", photo: "" },
+            // The Chief of Police is locked in at #503
+            503: { name: "ARNAR VIGLUNDSSON", kt: "140865-2289", job: "CHIEF OF POLICE", offense: "RAPIST", date: "UNDISCLOSED", photo: "" }
+        };
+        // --------------------------------------------------------------- //
 
         const firstNames = ["Jón", "Gunnar", "Ólafur", "Einar", "Magnús"]; 
         const lastNames = ["Jónsson", "Guðmundsson", "Sigurðsson", "Þórðarson", "Pálsson"];
@@ -613,28 +676,30 @@
             const li = document.createElement('li');
             const formattedId = String(i).padStart(3, '0');
             
-            let name, kennitala, job, offense, date;
+            let name, kennitala, job, offense, date, photo;
 
-            if (i === 503) {
-                name = "ARNAR VIGLUNDSSON";
-                kennitala = "140865-2289";
-                job = "CHIEF OF POLICE";
-                offense = "RAPIST";
-                date = "UNDISCLOSED";
+            if (scriptedEntries[i]) {
+                name = scriptedEntries[i].name;
+                kennitala = scriptedEntries[i].kt;
+                job = scriptedEntries[i].job;
+                offense = scriptedEntries[i].offense;
+                date = scriptedEntries[i].date;
+                photo = scriptedEntries[i].photo; 
             } else {
                 name = `${getRandom(firstNames)} ${getRandom(lastNames)}`.toUpperCase();
                 kennitala = getFakeKennitala();
                 job = getRandom(jobs).toUpperCase();
                 offense = getRandom(offenses).toUpperCase();
                 date = getRandomDate();
+                photo = ""; 
             }
 
-            // Save data attributes for the ID card
             li.dataset.id = formattedId;
             li.dataset.name = name;
             li.dataset.kt = kennitala;
             li.dataset.job = job;
             li.dataset.offense = offense;
+            li.dataset.photo = photo; 
 
             li.innerHTML = `
                 <span class="col-name">${formattedId} - ${name}</span>
@@ -655,57 +720,119 @@
             selectedLi = li;
             li.classList.add('selected');
             
-            // Populate the ID card in the sidebar
             cardId.textContent = li.dataset.id;
             cardName.textContent = li.dataset.name;
             cardKt.textContent = li.dataset.kt;
             cardJob.textContent = li.dataset.job;
             cardOffense.textContent = li.dataset.offense;
+
+            const photoUrl = li.dataset.photo;
+            if (photoUrl && photoUrl !== "") {
+                cardPhotoImg.src = photoUrl;
+                cardPhotoImg.style.display = 'block'; 
+                cardPhotoText.style.display = 'none'; 
+            } else {
+                cardPhotoImg.src = "";
+                cardPhotoImg.style.display = 'none';  
+                cardPhotoText.style.display = 'block'; 
+            }
         }
 
-        // 1. Select via Mouse Click
+        // Automatic center selection based on scroll position
+        listScrollContainer.addEventListener('scroll', function() {
+            const items = listContainer.getElementsByTagName('li');
+            
+            // Check top edge case
+            if (listScrollContainer.scrollTop === 0) {
+                for(let i=0; i<items.length; i++) {
+                    if (items[i].style.display !== 'none') {
+                        if (items[i] !== selectedLi) selectRow(items[i]);
+                        return;
+                    }
+                }
+            }
+            
+            // Check bottom edge case
+            if (Math.ceil(listScrollContainer.scrollTop + listScrollContainer.clientHeight) >= listScrollContainer.scrollHeight) {
+                for(let i=items.length-1; i>=0; i--) {
+                    if (items[i].style.display !== 'none') {
+                        if (items[i] !== selectedLi) selectRow(items[i]);
+                        return;
+                    }
+                }
+            }
+            
+            // Normal center-based selection
+            const containerCenter = listScrollContainer.scrollTop + (listScrollContainer.clientHeight / 2);
+            let closestLi = null;
+            let minDistance = Infinity;
+            
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].style.display === 'none') continue;
+                
+                // Calculate item center relative to container
+                const liCenter = items[i].offsetTop + (items[i].offsetHeight / 2);
+                const distance = Math.abs(liCenter - containerCenter);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestLi = items[i];
+                } else if (distance > minDistance) {
+                    // Safe to break early because offsets always increase downward
+                    break; 
+                }
+            }
+            
+            if (closestLi && closestLi !== selectedLi) {
+                selectRow(closestLi);
+            }
+        });
+
+        // Click Selection
         listContainer.addEventListener('click', function(e) {
             const li = e.target.closest('li');
             if (!li) return;
             selectRow(li);
         });
 
-        // 2. Select via Keyboard Arrow Keys (Up/Down)
+        // Arrow Key Navigation
         document.addEventListener('keydown', function(e) {
+            // Ignore if user is typing in the search bar
+            if(document.activeElement === searchInput) return;
+
             if (!selectedLi) return;
             
-            if (e.key === 'ArrowDown') {
-                e.preventDefault(); // Stop entire page from scrolling
+            const key = e.key.toLowerCase();
+            
+            if (key === 'arrowdown') {
+                e.preventDefault(); 
                 let next = selectedLi.nextElementSibling;
-                // Skip hidden rows if search is active
                 while(next && next.style.display === 'none') {
                     next = next.nextElementSibling;
                 }
                 if (next) {
-                    selectRow(next);
-                    next.scrollIntoView({ block: 'nearest' });
+                    // Force the item into the center of the view, which triggers our new auto-selection scroll listener
+                    next.scrollIntoView({ block: 'center' }); 
                 }
-            } else if (e.key === 'ArrowUp') {
+            } else if (key === 'arrowup') {
                 e.preventDefault(); 
                 let prev = selectedLi.previousElementSibling;
-                // Skip hidden rows if search is active
                 while(prev && prev.style.display === 'none') {
                     prev = prev.previousElementSibling;
                 }
                 if (prev) {
-                    selectRow(prev);
-                    prev.scrollIntoView({ block: 'nearest' });
+                    prev.scrollIntoView({ block: 'center' });
                 }
             }
         });
 
-        // Auto-select the very first entry on page load
+        // Auto-select the first entry on page load
         const firstEntry = listContainer.querySelector('li');
         if (firstEntry) {
             selectRow(firstEntry);
         }
 
-        // Active Search Bar Functionality (Highlight without hiding)
+        // Active Search Bar Functionality
         searchInput.addEventListener('input', function(e) {
             const searchTerm = e.target.value.toUpperCase();
             const items = listContainer.getElementsByTagName('li');
@@ -714,8 +841,7 @@
             
             for (let i = 0; i < items.length; i++) {
                 const nameText = items[i].dataset.name; 
-                
-                items[i].style.display = 'flex'; // Keep visible
+                items[i].style.display = 'flex'; 
                 
                 if (searchTerm.length === 0) {
                     items[i].classList.remove('highlight');
@@ -728,19 +854,90 @@
                 }
             }
             
-            // Update the results counter and auto-scroll
             if (searchTerm.length === 0) {
                 resultCount.textContent = "";
             } else {
                 resultCount.textContent = `[ ${matchCount} RESULTS ]`;
-                
                 if (firstMatch) {
                     listScrollContainer.scrollTop = firstMatch.offsetTop - listScrollContainer.offsetTop;
-                    // Automatically lock selection onto the first search hit
-                    selectRow(firstMatch);
+                    selectRow(firstMatch); 
                 }
             }
         });
+
+        // --- DIRECTOR CONTROLS & AUTO SCROLL LOGIC --- //
+        let isAutoScrolling = false;
+        let autoScrollSpeed = 1.0; 
+        let currentScrollY = listScrollContainer.scrollTop;
+        let animationFrameId;
+
+        const dirMenu = document.getElementById('director-menu');
+        const statPlay = document.getElementById('status-play');
+        const statSpeed = document.getElementById('status-speed');
+
+        function autoScrollLoop() {
+            if (isAutoScrolling) {
+                currentScrollY += autoScrollSpeed;
+                listScrollContainer.scrollTop = currentScrollY;
+                
+                // Sync to reality (prevents loop continuing past bottom logic)
+                currentScrollY = listScrollContainer.scrollTop; 
+                
+                animationFrameId = requestAnimationFrame(autoScrollLoop);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement === searchInput) return;
+
+            const key = e.key.toLowerCase();
+
+            switch(key) {
+                case 'h':
+                    // Toggle menu visibility
+                    dirMenu.style.display = (dirMenu.style.display === 'none') ? 'block' : 'none';
+                    break;
+                case 'p':
+                    // Play/Pause
+                    isAutoScrolling = !isAutoScrolling;
+                    if (isAutoScrolling) {
+                        statPlay.textContent = "[PLAYING]";
+                        statPlay.style.color = "#00FF00"; 
+                        currentScrollY = listScrollContainer.scrollTop; 
+                        autoScrollLoop();
+                    } else {
+                        statPlay.textContent = "[PAUSED]";
+                        statPlay.style.color = "#FFFFFF";
+                        cancelAnimationFrame(animationFrameId);
+                    }
+                    break;
+                case 'f':
+                    // Faster
+                    autoScrollSpeed += 0.5;
+                    statSpeed.textContent = autoScrollSpeed.toFixed(1);
+                    break;
+                case 's':
+                    // Slower
+                    autoScrollSpeed = Math.max(0.5, autoScrollSpeed - 0.5); // Minimum speed cap
+                    statSpeed.textContent = autoScrollSpeed.toFixed(1);
+                    break;
+                case 't':
+                    // Top
+                    listScrollContainer.scrollTop = 0;
+                    currentScrollY = 0;
+                    break;
+                case 'b':
+                    // Bottom
+                    listScrollContainer.scrollTop = listScrollContainer.scrollHeight;
+                    currentScrollY = listScrollContainer.scrollTop;
+                    break;
+                case 'm':
+                    // Monochrome toggle
+                    document.body.classList.toggle('monochrome');
+                    break;
+            }
+        });
+
     </script>
 </body>
 </html>
