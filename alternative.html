@@ -138,7 +138,7 @@
 
     .name-list {
         list-style-type: none;
-        padding: 0;
+        padding: 0; 
         margin: 0; 
         min-width: 800px; /* Gives names more room */
         display: block;
@@ -322,7 +322,8 @@
     /* ID Card Widget */
     #id-card {
         font-family: "Courier New", Courier, monospace;
-        margin-top: -2.4rem; /* Adjusted from -3.2rem to -2.4rem, pushing the element approx ~13 pixels lower on Y */
+        margin-top: -1rem; /* Aligns the top of the widget with the bottom stroke of the post title */
+        display: none; /* Hidden by default until an item is selected */
     }
 
     .id-wrapper {
@@ -454,7 +455,7 @@
             <h1 class="site-title">VIDARR.IS</h1>
             
             <!-- [EDIT HERE]: SUBTITLE -->
-            <div class="site-description">Vengeance is Mine, and retribution, in due time their foot will slip; for the day of their calamity is near</div>
+            <div class="site-description">Vengeance is Mine, and retribution, In due time their foot will slip; For the day of their calamity is near.</div>
         </header>
 
         <!-- Navigation Menu -->
@@ -531,10 +532,9 @@
             <!-- --- RIGHT SIDEBAR --- -->
             <aside class="sidebar sidebar-right">
                 
-                <!-- Invisible Spacer: This mirrors the Title and Date heights to force the ID Card to align flush with the top of the List box -->
+                <!-- Invisible Spacer: This mirrors the Title height to force the ID Card to align flush with the title's bottom stroke -->
                 <div class="spacer" style="visibility: hidden; pointer-events: none; user-select: none;" aria-hidden="true">
                     <h2 class="post-title">Release 01: The List (503 Records)</h2>
-                    <div class="post-date">Posted by Admin | System Init: 00</div>
                 </div>
 
                 <!-- Fixed ID Card Panel Widget -->
@@ -619,6 +619,7 @@
         const cardPhotoText = document.getElementById('card-photo-text');
 
         let selectedLi = null;
+        let isArrowNav = false; // Flag to prevent scroll listener from fighting keyboard controls
 
         // --- [EDIT HERE]: SCRIPTED ENTRIES DICTIONARY --- //
         // To add a photo, put the link between the quotes (e.g. photo: "images/mugshot.jpg")
@@ -731,6 +732,12 @@
 
         // --- SELECTION LOGIC --- //
         function selectRow(li) {
+            // Reveal ID card if it's currently hidden
+            const idCardWidget = document.getElementById('id-card');
+            if (idCardWidget.style.display !== 'block') {
+                idCardWidget.style.display = 'block';
+            }
+
             if (selectedLi) {
                 selectedLi.classList.remove('selected');
             }
@@ -755,10 +762,13 @@
             }
         }
 
-        // Automatic center selection based on scroll position
+        // Automatic top-edge selection based on scroll position
         listScrollContainer.addEventListener('scroll', function() {
+            if (isArrowNav) return; // Prevent fight with manual keyboard navigation
+            
             const items = listContainer.getElementsByTagName('li');
             
+            // Edge case: Top of the list forces Item 1
             if (listScrollContainer.scrollTop === 0) {
                 for(let i=0; i<items.length; i++) {
                     if (items[i].style.display !== 'none') {
@@ -768,6 +778,7 @@
                 }
             }
             
+            // Edge case: Bottom of the list
             if (Math.ceil(listScrollContainer.scrollTop + listScrollContainer.clientHeight) >= listScrollContainer.scrollHeight) {
                 for(let i=items.length-1; i>=0; i--) {
                     if (items[i].style.display !== 'none') {
@@ -777,7 +788,9 @@
                 }
             }
             
-            const containerCenter = listScrollContainer.scrollTop + (listScrollContainer.clientHeight / 2);
+            // Focus point: Just below the top edge to smoothly scan the top row
+            const focusPoint = listScrollContainer.scrollTop + 25; 
+            
             let closestLi = null;
             let minDistance = Infinity;
             
@@ -785,13 +798,13 @@
                 if (items[i].style.display === 'none') continue;
                 
                 const liCenter = items[i].offsetTop + (items[i].offsetHeight / 2);
-                const distance = Math.abs(liCenter - containerCenter);
+                const distance = Math.abs(liCenter - focusPoint);
                 
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestLi = items[i];
                 } else if (distance > minDistance) {
-                    break; 
+                    break; // Offsets strictly increase, safe to break early
                 }
             }
             
@@ -810,9 +823,23 @@
         // Arrow Key Navigation
         document.addEventListener('keydown', function(e) {
             if(document.activeElement === searchInput) return;
-            if (!selectedLi) return;
             
             const key = e.key.toLowerCase();
+            
+            // Allow arrow down to select the first item if nothing is currently selected
+            if (!selectedLi) {
+                if (key === 'arrowdown') {
+                    e.preventDefault();
+                    const first = listContainer.querySelector('li:not([style*="display: none"])');
+                    if (first) {
+                        isArrowNav = true;
+                        selectRow(first);
+                        first.scrollIntoView({ block: 'nearest' });
+                        setTimeout(() => isArrowNav = false, 100);
+                    }
+                }
+                return;
+            }
             
             if (key === 'arrowdown') {
                 e.preventDefault(); 
@@ -821,7 +848,10 @@
                     next = next.nextElementSibling;
                 }
                 if (next) {
-                    next.scrollIntoView({ block: 'center' }); 
+                    isArrowNav = true;
+                    selectRow(next);
+                    next.scrollIntoView({ block: 'nearest' }); 
+                    setTimeout(() => isArrowNav = false, 100);
                 }
             } else if (key === 'arrowup') {
                 e.preventDefault(); 
@@ -830,16 +860,13 @@
                     prev = prev.previousElementSibling;
                 }
                 if (prev) {
-                    prev.scrollIntoView({ block: 'center' });
+                    isArrowNav = true;
+                    selectRow(prev);
+                    prev.scrollIntoView({ block: 'nearest' });
+                    setTimeout(() => isArrowNav = false, 100);
                 }
             }
         });
-
-        // Auto-select the first entry on page load
-        const firstEntry = listContainer.querySelector('li');
-        if (firstEntry) {
-            selectRow(firstEntry);
-        }
 
         // Active Search Bar Functionality
         searchInput.addEventListener('input', function(e) {
@@ -912,7 +939,17 @@
                     if (isAutoScrolling) {
                         statPlay.textContent = "[PLAYING]";
                         statPlay.style.color = "#00FF00"; 
-                        currentScrollY = listScrollContainer.scrollTop; 
+                        
+                        // If no item is selected yet, instantly jump to top to select Item 1
+                        if (!selectedLi) {
+                            listScrollContainer.scrollTop = 0;
+                            currentScrollY = 0;
+                            const firstVisible = listContainer.querySelector('li:not([style*="display: none"])');
+                            if (firstVisible) selectRow(firstVisible);
+                        } else {
+                            currentScrollY = listScrollContainer.scrollTop; 
+                        }
+
                         autoScrollLoop();
                     } else {
                         statPlay.textContent = "[PAUSED]";
@@ -931,7 +968,7 @@
                     statSpeed.textContent = autoScrollSpeed.toFixed(1);
                     break;
                 case 't':
-                    // Top
+                    // Top (Snaps to top edge, naturally triggering the "Top" edge case logic to select Item 1)
                     listScrollContainer.scrollTop = 0;
                     currentScrollY = 0;
                     break;
