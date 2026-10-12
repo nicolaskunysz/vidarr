@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIDARR.IS</title>
+<style>
+    /* --- BLOGSPOT STYLE RESET & BODY --- */
+    body {
+        background-color: #FCFAEF;
+        color: #222222; 
+        font-family: Arial, Helvetica, sans-serif; 
+        margin: 0;
+        padding: 1rem 2rem; 
+        line-height: 1.6;
+    }
+
+    /* Centered Main Blog Container - Frameless */
+    .blog-container {
+        max-width: 1300px; 
+        margin: 0 auto;
+        padding: 0; 
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    /* --- SITE HEADER & NAV --- */
+    .site-header {
+        text-align: center;
+        margin-bottom: 0.5rem; 
+    }
+
+    .site-title {
+        font-family: Georgia, "Times New Roman", Times, serif; 
+        font-size: 3rem; 
+        font-weight: normal;
+        letter-spacing: 0.05em;
+        margin: 0;
+        color: #111111; 
+        text-transform: uppercase;
+    }
+
+    .site-description {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-style: italic;
+        color: #666666;
+        font-size: 1rem;
+        margin-top: 0.2rem;
+    }
+
+    .site-nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 1.5rem; 
+        padding: 0.5rem 0; 
+        border-top: 1px solid #CCCCCC;
+        border-bottom: 1px solid #CCCCCC;
+    }
+
+    .site-nav a {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.1rem;
+        color: #555555;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .site-nav a:hover, .site-nav a.active {
+        color: #000000;
+        font-weight: bold;
+    }
+
+    /* --- 2-COLUMN LAYOUT WRAPPER --- */
+    .layout-wrapper {
+        display: flex;
+        gap: 4rem; 
+        align-items: flex-start;
+    }
+
+    /* --- MAIN CONTENT & MOSAIC GRID (Center/Right Column) --- */
+    .main-content {
+        flex: 1; 
+        min-width: 0; 
+    }
+
+    .post-title {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.8rem;
+        font-weight: normal;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #111111;
+        border-bottom: 2px solid #EAE6D8;
+        padding-bottom: 0.5rem;
+    }
+
+    .post-date {
+        font-size: 0.8rem;
+        color: #888888;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .list-container {
+        font-family: "Courier New", Courier, monospace; 
+        width: 100%;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .name-list {
+        list-style-type: none;
+        padding: 0; 
+        margin: 0; 
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 4rem 1.5rem; 
+    }
+
+    .name-list li {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer; 
+        user-select: none;
+        transition: transform 0.2s ease;
+    }
+
+    .name-list li:hover {
+        transform: scale(1.03); 
+    }
+
+    /* Layout for the Photo Preview */
+    .mosaic-photo {
+        position: relative; /* Needed to anchor the ID overlay */
+        width: 160px; 
+        height: 220px; 
+        background-color: #EAE6D8;
+        border: 1px solid #BBBBBB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 0.8rem; 
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.05); 
+    }
+
+    /* New ID tag inside the photo */
+    .photo-id {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #111111;
+        color: #F4F1E1;
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 2px 6px;
+        z-index: 2;
+    }
+
+    .mosaic-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .no-photo-text {
+        font-size: 0.7rem;
+        color: #888888;
+        text-align: center;
+        letter-spacing: 0.1em;
+    }
+
+    /* Layout for the Data under the photo */
+    .mosaic-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        text-align: center;  
+        width: 100%;
+    }
+
+    .col-name { 
+        font-family: Georgia, serif;
+        font-size: 1.1rem;
+        font-weight: bold; 
+        color: #111111; 
+        margin-bottom: 0.3rem;
+        line-height: 1.2;
+    }
+    
+    .col-job { 
+        color: #555555; 
+        font-size: 0.8rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .col-offense { 
+        color: #111111; 
+        font-weight: bold;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        text-transform: uppercase;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+        justify-content: center; 
+    }
+
+    .action-btn {
+        background: #EAE6D8;
+        color: #333333;
+        border: 1px solid #BBBBBB;
+        padding: 0.4rem 0.8rem;
+        font-family: inherit; 
+        font-size: 0.8rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .action-btn:hover {
+        background: #DCD8CE;
+        color: #111111;
+    }
+
+    /* --- SIDEBAR WIDGETS (Left Only) --- */
+    .sidebar {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        position: sticky;
+        top: 2rem; 
+        height: fit-content;
+    }
+
+    .sidebar-left {
+        width: 250px;
+    }
+
+    .widget {
+        background: #F4F1E1;
+        border: 1px solid #DCD8CE;
+        padding: 1.5rem;
+    }
+
+    .widget h3 {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.1rem;
+        font-weight: normal;
+        font-style: italic;
+        border-bottom: 1px solid #CCCCCC;
+        padding-bottom: 0.5rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #111111;
+    }
+
+    /* Search Widget */
+    .search-box-wrapper {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .search-box-wrapper input {
+        background-color: #FFFFFF;
+        color: #111111;
+        border: 1px solid #BBBBBB;
+        padding: 0.4rem 0.6rem;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .search-box-wrapper input:focus {
+        outline: none;
+        border-color: #666666;
+    }
+    
+    .result-count {
+        color: #111111; 
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        margin-top: 0.2rem;
+    }
+
+    .secret-btn {
+        color: #AAAAAA; 
+        opacity: 0; 
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: crosshair;
+        transition: opacity 0.2s;
+        margin-left: auto; 
+    }
+
+    .secret-btn:hover {
+        opacity: 1; 
+    }
+
+    /* Index Widget */
+    .backlog-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.85rem;
+        color: #666666;
+    }
+
+    .backlog-list li {
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .backlog-list .date {
+        display: block;
+        font-size: 0.7rem;
+        color: #888888;
+        font-weight: bold;
+    }
+
+    .backlog-list .current {
+        color: #111111;
+        font-weight: bold;
+    }
+
+    /* --- MAGNIFY MODAL OVERLAY --- */
+    #magnify-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px); 
+        z-index: 50000;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+    }
+
+    #magnify-card {
+        background-color: #E6E2D8;
+        border: 2px solid #111111;
+        box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.4);
+        padding: 2rem;
+        width: 90%;
+        max-width: 450px;
+        font-family: "Courier New", Courier, monospace;
+        transform: scale(0.8);
+        opacity: 0;
+        animation: popIn 0.2s forwards cubic-bezier(0.2, 0.9, 0.3, 1.3);
+    }
+
+    @keyframes popIn {
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .mag-wrapper {
+        display: flex;
+        flex-direction: column; 
+        gap: 20px;
+    }
+
+    .mag-photo-container {
+        width: 100%;
+        height: 250px;
+        background-color: #DCD8CE;
+        border: 1px dashed #777;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #555555;
+        font-size: 0.9rem;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    #mag-photo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none; 
+    }
+
+    .mag-details {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mag-field {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px dotted #BBBBBB;
+        padding-bottom: 5px;
+    }
+
+    .mag-label {
+        color: #666666;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .mag-value {
+        color: #111111;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    
+    .mag-close-hint {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #888;
+        margin-top: 1rem;
+    }
+
+    /* --- SITE FOOTER --- */
+    .site-footer {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #CCCCCC;
+        font-size: 0.75rem;
+        color: #888888;
+        text-align: center;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    /* --- DIRECTOR'S CONTROL MENU --- */
+    #director-menu {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.85);
+        border: 1px solid #555555;
+        padding: 15px 20px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        color: #AAAAAA;
+        z-index: 10000;
+        display: block;
+        box-shadow: -4px -4px 0px rgba(0, 0, 0, 0.2);
+    }
+    #director-menu h4 {
+        color: #FFFFFF;
+        margin-top: 0;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+    }
+    #director-menu ul {
+        list-style: none;
+        padding: 0; margin: 0;
+    }
+    #director-menu li {
+        margin-bottom: 5px;
+    }
+    #director-menu .key {
+        color: #FFFFFF;
+        font-weight: bold;
+        display: inline-block;
+        width: 30px;
+    }
+    .status-highlight { color: #FFFFFF; font-weight: bold; }
+
+    /* --- ADAPTIVE / MOBILE STYLES --- */
+    @media (max-width: 950px) {
+        body { padding: 1rem; }
+        .layout-wrapper { flex-direction: column; gap: 2rem; }
+        .sidebar { position: static; height: auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .widget { margin-bottom: 0; }
+    }
+    @media (max-width: 650px) {
+        .site-title { font-size: 2rem; }
+        .sidebar { grid-template-columns: 1fr; }
+        .name-list { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+    <div class="blog-container">
+        <!-- Header Section -->
+        <header class="site-header">
+            <h1 class="site-title">VIDARR.IS</h1>
+            <div class="site-description">Vengeance is Mine, and retribution, In due time their foot will slip; For the day of their calamity is near.</div>
+        </header>
+
+        <!-- Navigation Menu -->
+        <nav class="site-nav">
+            <a href="#" class="active">PUBLICATION LOG</a>
+            <a href="#">ABOUT DIRECTIVE</a>
+            <a href="#">SECURE DROPBOX</a>
+            <a href="#">PGP KEY</a>
+        </nav>
+
+        <div class="layout-wrapper">
+            
+            <!-- --- LEFT SIDEBAR --- -->
+            <aside class="sidebar sidebar-left">
+                
+                <!-- Search Widget -->
+                <div class="widget">
+                    <h3>Search Archive</h3>
+                    <div class="search-box-wrapper">
+                        <input type="text" id="searchInput" placeholder="Search names...">
+                        <a href="https://vidarr.is/underconstruction.html" class="secret-btn">+</a>
+                        <span id="resultCount" class="result-count"></span>
+                    </div>
+                </div>
+
+                <!-- Index Widget -->
+                <div class="widget">
+                    <h3>Index Backlog</h3>
+                    <ul class="backlog-list">
+                        <li>
+                            <span class="date">SYS_INIT_00</span>
+                            SERVER PROVISIONED<br>
+                            <span style="color:#888; font-size: 0.75rem;">ROOT ACCESS SECURED</span>
+                        </li>
+                        <li class="current">
+                            <span class="date">PUBLICATION_01</span>
+                            THE LIST (503 RECORDS)<br>
+                            <span style="color:#555; font-size: 0.75rem;">ACTIVE</span>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <!-- --- MAIN CONTENT (CENTER MOSAIC) --- -->
+            <main class="main-content">
+                <h2 class="post-title">Release 01: The List (503 Records)</h2>
+                <div class="post-date">Posted by Admin | System Init: 00</div>
+
+                <div class="list-container" id="listScrollContainer">
+                    <ul class="name-list" id="target-list">
+                        <!-- JavaScript will populate the 503 mosaic cards here -->
+                    </ul>
+                </div>
+
+                <div class="action-bar">
+                    <button class="action-btn">PRINT LOG</button>
+                    <button class="action-btn">EXPORT .CSV</button>
+                </div>
+            </main>
+            
+        </div> <!-- End Layout Wrapper -->
+
+        <!-- Discreet Footer -->
+        <footer class="site-footer">
+            SYS_VER: 1.0.4.88 // LOC: UNKNOWN // CONNECTION SECURE // ENCRYPTION: AES-256 (GCM)
+        </footer>
+    </div> <!-- End Blog Container -->
+
+    <!-- --- MAGNIFY MODAL OVERLAY --- -->
+    <div id="magnify-overlay">
+        <div id="magnify-card">
+            <div class="mag-wrapper">
+                <!-- Photo Container -->
+                <div class="mag-photo-container">
+                    <img id="mag-photo-img" src="" alt="Subject Photo">
+                    <div id="mag-photo-text">[ IMAGE ]<br>[ MISSING ]</div>
+                </div>
+                
+                <div class="mag-details">
+                    <div class="mag-field">
+                        <span class="mag-label">Subject ID</span>
+                        <span class="mag-value" id="mag-id">---</span>
+                    </div>
+                    <div class="mag-field">
+                        <span class="mag-label">Name</span>
+                        <span class="mag-value" id="mag-name">---</span>
+                    </div>
+                    <div class="mag-field">
+                        <span class="mag-label">Designation</span>
+                        <span class="mag-value" id="mag-job">---</span>
+                    </div>
+                    <div class="mag-field">
+                        <span class="mag-label">Conviction</span>
+                        <span class="mag-value" id="mag-offense">---</span>
+                    </div>
+                    <div class="mag-field" style="border:none;">
+                        <span class="mag-label">Date</span>
+                        <span class="mag-value" id="mag-date">---</span>
+                    </div>
+                </div>
+
+                <div class="mag-close-hint">[ PRESS ESC OR CLICK OUTSIDE TO CLOSE ]</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Director Control Menu -->
+    <div id="director-menu">
+        <h4>DIRECTOR CONTROLS</h4>
+        <ul>
+            <li><span class="key">h</span> Toggle this menu</li>
+            <li><span class="key">p</span> Play / Pause Auto-Scroll <span id="status-play" class="status-highlight">[PAUSED]</span></li>
+            <li><span class="key">f</span> Increase Speed</li>
+            <li><span class="key">s</span> Decrease Speed</li>
+            <li><span class="key">t</span> Jump to Top</li>
+            <li><span class="key">b</span> Jump to Bottom</li>
+        </ul>
+        <div style="margin-top: 10px; border-top: 1px dashed #444; padding-top: 5px;">
+            Speed: <span id="status-speed" class="status-highlight">1.0</span> px/frame
+        </div>
+    </div>
+
+    <script>
+        const listContainer = document.getElementById('target-list');
+        const searchInput = document.getElementById('searchInput');
+        const resultCount = document.getElementById('resultCount');
+        
+        // Modal Elements
+        const magOverlay = document.getElementById('magnify-overlay');
+        const magId = document.getElementById('mag-id');
+        const magName = document.getElementById('mag-name');
+        const magJob = document.getElementById('mag-job');
+        const magOffense = document.getElementById('mag-offense');
+        const magDate = document.getElementById('mag-date');
+        const magPhotoImg = document.getElementById('mag-photo-img');
+        const magPhotoText = document.getElementById('mag-photo-text');
+
+        // --- [EDIT HERE]: SCRIPTED ENTRIES DICTIONARY --- //
+        const scriptedEntries = {
+            12:  { name: "[ NAME_01 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "01 JAN 2020", photo: "" },
+            28:  { name: "[ NAME_02 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "15 FEB 2019", photo: "" },
+            44:  { name: "[ NAME_03 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "22 MAR 2021", photo: "" },
+            60:  { name: "[ NAME_04 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "05 APR 2018", photo: "" },
+            76:  { name: "[ NAME_05 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "11 MAY 2022", photo: "" },
+            92:  { name: "[ NAME_06 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "09 JUN 2017", photo: "" },
+            108: { name: "[ NAME_07 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "14 JUL 2023", photo: "" },
+            124: { name: "[ NAME_08 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "30 AUG 2016", photo: "" },
+            140: { name: "[ NAME_09 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "18 SEP 2020", photo: "" },
+            156: { name: "[ NAME_10 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "02 OCT 2021", photo: "" },
+            172: { name: "[ NAME_11 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "21 NOV 2018", photo: "" },
+            188: { name: "[ NAME_12 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "10 DEC 2015", photo: "" },
+            204: { name: "[ NAME_13 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "08 JAN 2022", photo: "" },
+            220: { name: "[ NAME_14 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "17 FEB 2017", photo: "" },
+            236: { name: "[ NAME_15 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "03 MAR 2019", photo: "" },
+            252: { name: "[ NAME_16 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "29 APR 2020", photo: "" },
+            268: { name: "[ NAME_17 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "12 MAY 2016", photo: "" },
+            284: { name: "[ NAME_18 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "25 JUN 2021", photo: "" },
+            300: { name: "[ NAME_19 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "07 JUL 2018", photo: "" },
+            316: { name: "[ NAME_20 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "19 AUG 2023", photo: "" },
+            332: { name: "[ NAME_21 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "04 SEP 2017", photo: "" },
+            348: { name: "[ NAME_22 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "28 OCT 2020", photo: "" },
+            364: { name: "[ NAME_23 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "11 NOV 2019", photo: "" },
+            380: { name: "[ NAME_24 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "23 DEC 2021", photo: "" },
+            396: { name: "[ NAME_25 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "06 JAN 2016", photo: "" },
+            412: { name: "[ NAME_26 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "14 FEB 2022", photo: "" },
+            428: { name: "[ NAME_27 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "27 MAR 2018", photo: "" },
+            444: { name: "[ NAME_28 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "02 APR 2023", photo: "" },
+            460: { name: "[ NAME_29 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "18 MAY 2017", photo: "" },
+            476: { name: "[ NAME_30 ]", job: "[ JOB ]", offense: "[ OFFENSE ]", date: "31 JUN 2020", photo: "" },
+            503: { name: "ARNAR VIGLUNDSSON", job: "CHIEF OF POLICE", offense: "RAPIST", date: "UNDISCLOSED", photo: "" }
+        };
+        // --------------------------------------------------------------- //
+
+        const firstNames = ["Jón", "Gunnar", "Ólafur", "Einar", "Magnús"]; 
+        const lastNames = ["Jónsson", "Guðmundsson", "Sigurðsson", "Þórðarson", "Pálsson"];
+        const jobs = ["Judge", "Lawyer", "Politician", "Artist", "CEO", "Surgeon", "Producer", "Banker"];
+        const offenses = ["Rapist", "Child Molester", "Sexual Assault", "Predator", "Statutory Rape"];
+        
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomDate() {
+            const start = new Date(1990, 0, 1);
+            const end = new Date(2023, 11, 31);
+            const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            const day = String(date.getDate()).padStart(2, '0');
+            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sept", "oct", "nov", "dec"];
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            return `${day} ${month} ${year}`; 
+        }
+
+        // Generate the 503 mosaic cards
+        for(let i = 1; i <= 503; i++) {
+            const li = document.createElement('li');
+            const formattedId = String(i).padStart(3, '0');
+            
+            let name, job, offense, date, photo;
+
+            if (scriptedEntries[i]) {
+                name = scriptedEntries[i].name;
+                job = scriptedEntries[i].job;
+                offense = scriptedEntries[i].offense;
+                date = scriptedEntries[i].date;
+                photo = scriptedEntries[i].photo; 
+            } else {
+                name = `${getRandom(firstNames)} ${getRandom(lastNames)}`.toUpperCase();
+                job = getRandom(jobs).toUpperCase();
+                offense = getRandom(offenses).toUpperCase();
+                date = getRandomDate();
+                photo = ""; 
+            }
+
+            li.dataset.id = formattedId;
+            li.dataset.name = name;
+            li.dataset.job = job;
+            li.dataset.offense = offense;
+            li.dataset.date = date;
+            li.dataset.photo = photo; 
+
+            // Clean layout: Portrait photo with ID overlay, Name and raw data below
+            li.innerHTML = `
+                <div class="mosaic-photo">
+                    <div class="photo-id">${formattedId}</div>
+                    <img src="${photo}" style="display: ${photo ? 'block' : 'none'};">
+                    <div class="no-photo-text" style="display: ${photo ? 'none' : 'block'};">[ IMG ]</div>
+                </div>
+                <div class="mosaic-data">
+                    <span class="col-name">${name}</span>
+                    <span class="col-job">${job}</span>
+                    <span class="col-offense">${offense}</span>
+                </div>
+            `;
+            
+            listContainer.appendChild(li);
+        }
+
+        // --- MAGNIFY MODAL LOGIC --- //
+        function openMagnifyModal(li) {
+            magId.textContent = li.dataset.id;
+            magName.textContent = li.dataset.name;
+            magJob.textContent = li.dataset.job;
+            magOffense.textContent = li.dataset.offense;
+            magDate.textContent = li.dataset.date;
+
+            const photoUrl = li.dataset.photo;
+            if (photoUrl && photoUrl !== "") {
+                magPhotoImg.src = photoUrl;
+                magPhotoImg.style.display = 'block'; 
+                magPhotoText.style.display = 'none'; 
+            } else {
+                magPhotoImg.src = "";
+                magPhotoImg.style.display = 'none';  
+                magPhotoText.style.display = 'block'; 
+            }
+
+            magOverlay.style.display = 'flex';
+        }
+
+        function closeMagnifyModal() {
+            magOverlay.style.display = 'none';
+        }
+
+        // Close modal on click outside
+        magOverlay.addEventListener('click', function(e) {
+            if (e.target === magOverlay) {
+                closeMagnifyModal();
+            }
+        });
+
+        // Click a card to magnify it
+        listContainer.addEventListener('click', function(e) {
+            const li = e.target.closest('li');
+            if (!li) return;
+            openMagnifyModal(li);
+        });
+
+        // Keyboard Controls
+        document.addEventListener('keydown', function(e) {
+            if(document.activeElement === searchInput) return;
+            
+            const key = e.key.toLowerCase();
+
+            // Close modal with ESC
+            if (key === 'escape' && magOverlay.style.display === 'flex') {
+                closeMagnifyModal();
+                return;
+            }
+        });
+
+        // Active Search Bar Functionality
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toUpperCase();
+            const items = listContainer.getElementsByTagName('li');
+            let matchCount = 0;
+            let firstMatch = null;
+            
+            for (let i = 0; i < items.length; i++) {
+                const nameText = items[i].dataset.name; 
+                items[i].style.display = 'flex'; 
+                
+                if (searchTerm.length === 0) {
+                    // Do nothing
+                } else if (nameText.includes(searchTerm)) {
+                    matchCount++;
+                    if (!firstMatch) firstMatch = items[i];
+                } else {
+                    items[i].style.display = 'none'; // Hide non-matches
+                }
+            }
+            
+            if (searchTerm.length === 0) {
+                resultCount.textContent = "";
+                for (let i = 0; i < items.length; i++) items[i].style.display = 'flex';
+            } else {
+                resultCount.textContent = `[ ${matchCount} ]`;
+                if (firstMatch) {
+                    const absoluteTop = firstMatch.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: absoluteTop - (window.innerHeight * 0.3), behavior: 'instant' });
+                }
+            }
+        });
+
+        // --- DIRECTOR CONTROLS & SMOOTH FULL PAGE AUTO SCROLL --- //
+        let isAutoScrolling = false;
+        let autoScrollSpeed = 1.0; 
+        let currentScrollY = window.scrollY;
+        let animationFrameId;
+
+        const dirMenu = document.getElementById('director-menu');
+        const statPlay = document.getElementById('status-play');
+        const statSpeed = document.getElementById('status-speed');
+
+        function autoScrollLoop() {
+            if (isAutoScrolling) {
+                currentScrollY += autoScrollSpeed;
+                
+                // Prevent scrolling infinitely past the bottom
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                if (currentScrollY >= maxScroll) {
+                    currentScrollY = maxScroll;
+                }
+
+                window.scrollTo(0, currentScrollY);
+                currentScrollY = window.scrollY; // Sync back to reality
+                
+                animationFrameId = requestAnimationFrame(autoScrollLoop);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement === searchInput) return;
+
+            const key = e.key.toLowerCase();
+
+            switch(key) {
+                case 'h':
+                    dirMenu.style.display = (dirMenu.style.display === 'none') ? 'block' : 'none';
+                    break;
+                case 'p':
+                    // Just purely toggles the smooth downward scroll animation
+                    isAutoScrolling = !isAutoScrolling;
+                    if (isAutoScrolling) {
+                        statPlay.textContent = "[PLAYING]";
+                        statPlay.style.color = "#00FF00"; 
+                        currentScrollY = window.scrollY; 
+                        autoScrollLoop();
+                    } else {
+                        statPlay.textContent = "[PAUSED]";
+                        statPlay.style.color = "#FFFFFF";
+                        cancelAnimationFrame(animationFrameId);
+                    }
+                    break;
+                case 'f':
+                    autoScrollSpeed += 0.5;
+                    statSpeed.textContent = autoScrollSpeed.toFixed(1);
+                    break;
+                case 's':
+                    autoScrollSpeed = Math.max(0.5, autoScrollSpeed - 0.5); 
+                    statSpeed.textContent = autoScrollSpeed.toFixed(1);
+                    break;
+                case 't':
+                    // Snaps to absolute top of the page smoothly
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    currentScrollY = 0;
+                    break;
+                case 'b':
+                    // Snaps to the absolute bottom of the page
+                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                    window.scrollTo({top: maxScroll, behavior: 'smooth'});
+                    currentScrollY = maxScroll;
+                    break;
+            }
+        });
+
+    </script>
+</body>
+</html>
