@@ -6,6 +6,14 @@
     <title>503 Service Unavailable - vidarr.is</title>
     
     <style>
+        html {
+            transition: filter 0.2s ease;
+        }
+
+        html.inverted {
+            filter: invert(1);
+        }
+
         body {
             background-color: #000000;
             color: #cccccc;
@@ -71,7 +79,7 @@
     
     <div class="status-container">
         <span class="highlight-title">[!] SYSTEM STATUS : UNDER CONSTRUCTION</span><br>
-        <span class="highlight-action">[!] ACTION        : AWAITING DEPLOYMENT FILES</span>
+        <span class="highlight-action">[!] ACTION         : AWAITING DEPLOYMENT FILES</span>
     </div>
     
     <p>
@@ -84,6 +92,21 @@
     <div class="server-sig">
         Apache/2.4.41 (Unix) OpenSSL/1.1.1d Server at vidarr.is Port 443
     </div>
+
+    <script>
+        document.addEventListener('keydown', function(event) {
+            // Check if key pressed is 'm' or 'M'
+            if (event.key.toLowerCase() === 'm') {
+                // Ignore if user is inside an input or textarea
+                const targetTag = event.target.tagName.toLowerCase();
+                if (targetTag === 'input' || targetTag === 'textarea' || event.target.isContentEditable) {
+                    return;
+                }
+                
+                document.documentElement.classList.toggle('inverted');
+            }
+        });
+    </script>
 
 </body>
 </html>
