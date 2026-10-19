@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIDARR.IS</title>
+<title>VIDARR.IS // THE ARCHIVE (MOSAIC)</title>
 
 <!-- PapaParse Library for reading CSV files directly from GitHub -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -82,7 +82,7 @@
     .layout-wrapper {
         display: flex;
         gap: 4rem; 
-        align-items: flex-start; /* Crucial for sticky left sidebar */
+        align-items: flex-start;
     }
 
     /* --- MAIN CONTENT & MOSAIC GRID --- */
@@ -155,12 +155,16 @@
         overflow: hidden;
         margin-bottom: 0.8rem; 
         box-shadow: 2px 2px 8px rgba(0,0,0,0.05); 
+        position: relative;
     }
 
     .mosaic-photo img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
     }
 
     .silhouette-svg {
@@ -385,13 +389,16 @@
         align-items: center;
         justify-content: flex-end;
         overflow: hidden;
+        position: relative;
     }
 
     #mag-photo-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: none; 
+        position: absolute;
+        top: 0;
+        left: 0;
     }
 
     .mag-details {
@@ -566,12 +573,10 @@
         <div id="magnify-card">
             <div class="mag-wrapper">
                 <div class="mag-photo-container">
-                    <img id="mag-photo-img" src="" alt="Subject Photo">
-                    <div id="mag-photo-text">
-                        <svg class="silhouette-svg" style="width: 170px; height: 210px;" viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet">
-                            <path d="M50 12 C35 12 25 24 25 40 C25 55 35 65 50 65 C65 65 75 55 75 40 C75 24 65 12 50 12 Z M15 120 C15 90 30 78 50 78 C70 78 85 90 85 120 Z" />
-                        </svg>
-                    </div>
+                    <svg class="silhouette-svg" style="width: 170px; height: 210px;" viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet">
+                        <path d="M50 12 C35 12 25 24 25 40 C25 55 35 65 50 65 C65 65 75 55 75 40 C75 24 65 12 50 12 Z M15 120 C15 90 30 78 50 78 C70 78 85 90 85 120 Z" />
+                    </svg>
+                    <img id="mag-photo-img" src="" alt="Subject Photo" onerror="this.style.display='none';">
                 </div>
                 
                 <div class="mag-details">
@@ -620,7 +625,7 @@
 
     <script>
         // =========================================================================
-        // EDIT THIS LINE: Paste your GitHub Raw CSV URL inside the quotes below!
+        // RAW GITHUB CSV URL
         // =========================================================================
         const CSV_URL = "https://raw.githubusercontent.com/nicolaskunysz/vidarr/main/Vidarr_List_503%20-%20Vidarr%20List.csv";
 
@@ -635,7 +640,6 @@
         const magJob = document.getElementById('mag-job');
         const magOffense = document.getElementById('mag-offense');
         const magPhotoImg = document.getElementById('mag-photo-img');
-        const magPhotoText = document.getElementById('mag-photo-text');
 
         const svgSilhouetteHTML = `
             <svg class="silhouette-svg" viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet">
@@ -657,31 +661,37 @@
         });
 
         function renderMosaicCards(data) {
-            listContainer.innerHTML = ""; // Clear loader/previous content
+            listContainer.innerHTML = ""; 
 
             data.forEach((row) => {
-                // Map column names from your CSV
-                const id = row['#'] ? String(row['#']).trim().padStart(3, '0') : '---';
+                // Map column names from CSV
+                const rawId = row['#'] ? String(row['#']).trim() : '0';
+                const formattedId = rawId.padStart(3, '0'); // Ensures 001, 002, etc.
+                
                 const name = row['Full Name'] ? String(row['Full Name']).trim().toUpperCase() : '---';
                 const kt = row['Kennitala (fake)'] ? String(row['Kennitala (fake)']).trim() : '---';
                 const job = row['Occupation'] ? String(row['Occupation']).trim().toUpperCase() : '---';
                 const offense = row['Accusation'] ? String(row['Accusation']).trim().toUpperCase() : '---';
-                const photo = row['Photo'] ? String(row['Photo']).trim() : '';
+                
+                // Point directly to images/001.png in your repository
+                const photoPath = `images/${formattedId}.png`;
 
                 const li = document.createElement('li');
-                li.dataset.id = id;
+                li.dataset.id = formattedId;
                 li.dataset.name = name;
                 li.dataset.kt = kt;
                 li.dataset.job = job;
                 li.dataset.offense = offense;
-                li.dataset.photo = photo; 
+                li.dataset.photo = photoPath; 
 
+                // SVG silhouette acts as fallback if the PNG fails to load
                 li.innerHTML = `
                     <div class="mosaic-photo">
-                        ${photo ? `<img src="${photo}">` : svgSilhouetteHTML}
+                        ${svgSilhouetteHTML}
+                        <img src="${photoPath}" alt="${name}" onerror="this.style.display='none';">
                     </div>
                     <div class="mosaic-data">
-                        <span class="col-id">${id}</span>
+                        <span class="col-id">${formattedId}</span>
                         <span class="col-name">${name}</span>
                         <span class="col-kt">${kt}</span>
                         <span class="col-job">${job}</span>
@@ -702,15 +712,8 @@
             magOffense.textContent = li.dataset.offense;
 
             const photoUrl = li.dataset.photo;
-            if (photoUrl && photoUrl !== "") {
-                magPhotoImg.src = photoUrl;
-                magPhotoImg.style.display = 'block'; 
-                magPhotoText.style.display = 'none'; 
-            } else {
-                magPhotoImg.src = "";
-                magPhotoImg.style.display = 'none';  
-                magPhotoText.style.display = 'block'; 
-            }
+            magPhotoImg.src = photoUrl;
+            magPhotoImg.style.display = 'block'; 
 
             magOverlay.style.display = 'flex';
         }
