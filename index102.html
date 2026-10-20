@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIDARR.IS</title>
+
+<!-- PapaParse Library for reading CSV files directly from GitHub -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<style>
+    /* --- BLOGSPOT STYLE RESET & BODY --- */
+    body {
+        background-color: #FCFAEF; /* Creamy paper background applied to the whole page */
+        color: #222222; 
+        font-family: Arial, Helvetica, sans-serif; 
+        margin: 0;
+        padding: 1rem 2rem; 
+        line-height: 1.6;
+    }
+
+    /* Centered Main Blog Container - Frameless */
+    .blog-container {
+        max-width: 1300px; 
+        margin: 0 auto;
+        padding: 0; 
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    /* --- SITE HEADER & NAV --- */
+    .site-header {
+        text-align: center;
+        margin-bottom: 0.5rem; 
+    }
+
+    .site-title {
+        font-family: Georgia, "Times New Roman", Times, serif; 
+        font-size: 3rem; 
+        font-weight: normal;
+        letter-spacing: 0.05em;
+        margin: 0;
+        color: #111111; 
+        text-transform: uppercase;
+    }
+
+    .site-description {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-style: italic;
+        color: #666666;
+        font-size: 1rem;
+        margin-top: 0.2rem;
+    }
+
+    .site-nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 1.5rem; 
+        padding: 0.5rem 0; 
+        border-top: 1px solid #CCCCCC;
+        border-bottom: 1px solid #CCCCCC;
+    }
+
+    .site-nav a {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.1rem;
+        color: #555555;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .site-nav a:hover, .site-nav a.active {
+        color: #000000;
+        font-weight: bold;
+    }
+
+    /* --- 2-COLUMN LAYOUT WRAPPER --- */
+    .layout-wrapper {
+        display: flex;
+        gap: 4rem; 
+        align-items: flex-start;
+    }
+
+    /* --- MAIN CONTENT & BLOG POSTS --- */
+    .main-content {
+        flex: 1; 
+        min-width: 0; 
+    }
+
+    .blog-post {
+        margin-bottom: 3.5rem;
+    }
+
+    .post-title {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.8rem;
+        font-weight: normal;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #111111;
+        border-bottom: 2px solid #EAE6D8;
+        padding-bottom: 0.5rem;
+    }
+
+    .post-date {
+        font-size: 0.8rem;
+        color: #888888;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* --- BLOG-STYLE VIDEO POST (MATCHES MOSAIC PAPER THEME) --- */
+    .video-post-box {
+        background-color: #F4F1E1;
+        border: 1px solid #BBBBBB;
+        padding: 1.2rem;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+        max-width: 780px;
+    }
+
+    .video-frame-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background-color: #050505;
+        border: 1px solid #888888;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    /* Keep 16:9 centered when in Fullscreen Mode */
+    .video-frame-wrapper:fullscreen,
+    .video-frame-wrapper:-webkit-full-screen {
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #000000;
+    }
+
+    .video-frame-wrapper canvas,
+    .video-frame-wrapper video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .video-frame-wrapper:fullscreen canvas,
+    .video-frame-wrapper:fullscreen video,
+    .video-frame-wrapper:-webkit-full-screen canvas,
+    .video-frame-wrapper:-webkit-full-screen video {
+        object-fit: contain;
+    }
+
+    /* Top-right corner Fullscreen Button */
+    .video-fullscreen-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(244, 241, 225, 0.92);
+        color: #222222;
+        border: 1px solid #888888;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 20;
+        transition: background-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .video-fullscreen-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+    }
+
+    .video-fullscreen-btn:hover {
+        background-color: #FFFFFF;
+        color: #000000;
+        transform: scale(1.08);
+    }
+
+    .subtitle-overlay {
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 86%;
+        text-align: center;
+        color: #FCFAEF;
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: clamp(0.9rem, 1.3vw, 1.15rem);
+        background: rgba(10, 10, 10, 0.75);
+        padding: 5px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        pointer-events: none;
+        display: none;
+        z-index: 15;
+    }
+
+    .video-controls-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.85rem;
+        padding-top: 0.75rem;
+        border-top: 1px dotted #BBBBBB;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    /* Icon-Only Player Buttons */
+    .video-ctrl-btn {
+        background: #EAE6D8;
+        color: #333333;
+        border: 1px solid #BBBBBB;
+        width: 34px;
+        height: 30px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .video-ctrl-btn:hover {
+        background: #DCD8CE;
+        color: #000000;
+    }
+
+    .video-ctrl-btn svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+    }
+
+    .video-seek-bar {
+        flex: 1;
+        accent-color: #333333;
+        cursor: pointer;
+        height: 4px;
+    }
+
+    .video-timecode {
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #555555;
+        min-width: 92px;
+        text-align: right;
+    }
+
+    /* --- MOSAIC GRID --- */
+    .list-container {
+        font-family: "Courier New", Courier, monospace; 
+        width: 100%;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .name-list {
+        list-style-type: none;
+        padding: 0; 
+        margin: 0; 
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 4rem 1.5rem; 
+    }
+
+    .name-list li {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer; 
+        user-select: none;
+        transition: transform 0.2s ease;
+    }
+
+    .name-list li:hover {
+        transform: scale(1.03); 
+    }
+
+    /* Photo Preview */
+    .mosaic-photo {
+        width: 160px; 
+        height: 220px; 
+        background-color: #E2DDD0;
+        border: 1px solid #BBBBBB;
+        display: flex;
+        align-items: flex-end; 
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 0.8rem; 
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.05); 
+        position: relative;
+    }
+
+    .mosaic-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .silhouette-svg {
+        width: 130px;
+        height: 170px;
+        fill: #A39D90;
+    }
+
+    /* Data Below Photo */
+    .mosaic-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        text-align: center;  
+        width: 100%;
+    }
+
+    .col-id {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #888888;
+        margin-bottom: 0.3rem;
+    }
+
+    .col-name { 
+        font-family: Georgia, serif;
+        font-size: 1.1rem;
+        font-weight: bold; 
+        color: #111111; 
+        margin-bottom: 0.3rem;
+        line-height: 1.2;
+    }
+    
+    .col-kt, .col-job { 
+        color: #555555; 
+        font-size: 0.8rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .col-offense { 
+        color: #111111; 
+        font-weight: bold;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        text-transform: uppercase;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+        justify-content: center; 
+    }
+
+    .action-btn {
+        background: #EAE6D8;
+        color: #333333;
+        border: 1px solid #BBBBBB;
+        padding: 0.4rem 0.8rem;
+        font-family: inherit; 
+        font-size: 0.8rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .action-btn:hover {
+        background: #DCD8CE;
+        color: #111111;
+    }
+
+    /* --- SIDEBAR WIDGETS --- */
+    .sidebar {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        position: sticky;
+        top: 2rem; 
+        height: fit-content;
+    }
+
+    .sidebar-left {
+        width: 250px;
+    }
+
+    .widget {
+        background: #F4F1E1;
+        border: 1px solid #DCD8CE;
+        padding: 1.5rem;
+    }
+
+    .widget h3 {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.1rem;
+        font-weight: normal;
+        font-style: italic;
+        border-bottom: 1px solid #CCCCCC;
+        padding-bottom: 0.5rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #111111;
+    }
+
+    .search-box-wrapper {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .search-box-wrapper input {
+        background-color: #FFFFFF;
+        color: #111111;
+        border: 1px solid #BBBBBB;
+        padding: 0.4rem 0.6rem;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .search-box-wrapper input:focus {
+        outline: none;
+        border-color: #666666;
+    }
+    
+    .result-count {
+        color: #111111; 
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        margin-top: 0.2rem;
+    }
+
+    .secret-btn {
+        color: #AAAAAA; 
+        opacity: 0; 
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: crosshair;
+        transition: opacity 0.2s;
+        margin-left: auto; 
+    }
+
+    .secret-btn:hover {
+        opacity: 1; 
+    }
+
+    .backlog-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.85rem;
+        color: #666666;
+    }
+
+    .backlog-list li {
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .backlog-list .date {
+        display: block;
+        font-size: 0.7rem;
+        color: #888888;
+        font-weight: bold;
+    }
+
+    .backlog-list .current {
+        color: #111111;
+        font-weight: bold;
+    }
+
+    /* --- MAGNIFY MODAL OVERLAYS (SUBJECT CARD & VIDEO MODAL) --- */
+    #magnify-overlay,
+    #video-magnify-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px); 
+        z-index: 50000;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+    }
+
+    #magnify-card {
+        background-color: #E6E2D8;
+        border: 2px solid #111111;
+        box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.4);
+        padding: 2rem;
+        width: 90%;
+        max-width: 450px;
+        font-family: "Courier New", Courier, monospace;
+        transform: scale(0.8);
+        opacity: 0;
+        animation: popIn 0.2s forwards cubic-bezier(0.2, 0.9, 0.3, 1.3);
+    }
+
+    /* Magnified Video Card in the exact same dossier style as #magnify-card */
+    #video-magnify-card {
+        background-color: #E6E2D8;
+        border: 2px solid #111111;
+        box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.4);
+        padding: 1.75rem;
+        width: 92%;
+        max-width: 960px;
+        font-family: "Courier New", Courier, monospace;
+        transform: scale(0.8);
+        opacity: 0;
+        animation: popIn 0.2s forwards cubic-bezier(0.2, 0.9, 0.3, 1.3);
+    }
+
+    .video-mag-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        border-bottom: 1px dotted #BBBBBB;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .video-mag-title {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 1.35rem;
+        font-weight: bold;
+        color: #111111;
+    }
+
+    .video-mag-sub {
+        font-size: 0.75rem;
+        color: #666666;
+        text-transform: uppercase;
+    }
+
+    @keyframes popIn {
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .mag-wrapper {
+        display: flex;
+        flex-direction: column; 
+        gap: 20px;
+    }
+
+    .mag-photo-container {
+        width: 100%;
+        height: 250px;
+        background-color: #D3CDBE;
+        border: 1px dashed #777;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #mag-photo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .mag-details {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mag-field {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px dotted #BBBBBB;
+        padding-bottom: 5px;
+    }
+
+    .mag-label {
+        color: #666666;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .mag-value {
+        color: #111111;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    
+    .mag-close-hint {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #888;
+        margin-top: 1rem;
+    }
+
+    /* --- SITE FOOTER --- */
+    .site-footer {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #CCCCCC;
+        font-size: 0.75rem;
+        color: #888888;
+        text-align: center;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    /* --- DIRECTOR'S CONTROL MENU --- */
+    #director-menu {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.85);
+        border: 1px solid #555555;
+        padding: 15px 20px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.8rem;
+        color: #AAAAAA;
+        z-index: 60000;
+        display: block;
+        box-shadow: -4px -4px 0px rgba(0, 0, 0, 0.2);
+    }
+    #director-menu h4 {
+        color: #FFFFFF;
+        margin-top: 0;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+    }
+    #director-menu ul {
+        list-style: none;
+        padding: 0; margin: 0;
+    }
+    #director-menu li {
+        margin-bottom: 5px;
+    }
+    #director-menu .key {
+        color: #FFFFFF;
+        font-weight: bold;
+        display: inline-block;
+        width: 48px;
+    }
+    .status-highlight { color: #FFFFFF; font-weight: bold; }
+
+    @media (max-width: 950px) {
+        body { padding: 1rem; }
+        .layout-wrapper { flex-direction: column; gap: 2rem; }
+        .sidebar { position: static; height: auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .widget { margin-bottom: 0; }
+    }
+    @media (max-width: 650px) {
+        .site-title { font-size: 2rem; }
+        .sidebar { grid-template-columns: 1fr; }
+        .name-list { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+    <div class="blog-container">
+        <!-- Header Section -->
+        <header class="site-header">
+            <h1 class="site-title">VIDARR.IS</h1>
+            <div class="site-description">"Vengeance is Mine, and retribution... For the day of their calamity is near." Deuteronomy 32:35</div>
+        </header>
+
+        <!-- Navigation Menu -->
+        <nav class="site-nav">
+            <a href="#" class="active">PUBLICATION LOG</a>
+            <a href="#">ABOUT DIRECTIVE</a>
+            <a href="#">SECURE DROPBOX</a>
+            <a href="#">PGP KEY</a>
+        </nav>
+
+        <div class="layout-wrapper">
+            
+            <!-- LEFT SIDEBAR -->
+            <aside class="sidebar sidebar-left">
+                <!-- Search Widget -->
+                <div class="widget">
+                    <h3>Search Archive</h3>
+                    <div class="search-box-wrapper">
+                        <input type="text" id="searchInput" placeholder="Search names...">
+                        <a href="https://vidarr.is/underconstruction.html" class="secret-btn">+</a>
+                        <span id="resultCount" class="result-count"></span>
+                    </div>
+                </div>
+
+                <!-- Index Widget -->
+                <div class="widget">
+                    <h3>Index Backlog</h3>
+                    <ul class="backlog-list">
+                        <li>
+                            <span class="date">SYS_INIT_00</span>
+                            SERVER PROVISIONED<br>
+                            <span style="color:#888; font-size: 0.75rem;">ROOT ACCESS SECURED</span>
+                        </li>
+                        <li>
+                            <span class="date">PUBLICATION_01</span>
+                            THE LIST (503 RECORDS)<br>
+                            <span style="color:#555; font-size: 0.75rem;">ACTIVE</span>
+                        </li>
+                        <!-- ====================================================================== -->
+                        <!-- ⬇️⬇️⬇️ EDIT HERE: SIDEBAR BACKLOG ENTRY FOR THE NEW VIDEO POST ⬇️⬇️⬇️ -->
+                        <!-- ====================================================================== -->
+                        <li class="current">
+                            <span class="date">PUBLICATION_02</span>
+                            STATEMENT<br>
+                            <span style="color:#555; font-size: 0.75rem;">NEW TRANSMISSION</span>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <!-- MAIN CONTENT COLUMN -->
+            <main class="main-content">
+
+                <!-- ========================================================================== -->
+                <!-- ⬇️⬇️⬇️ EDIT HERE: NEW BLOG POST (VIDEO POST HEADLINE & DATE) ⬇️⬇️⬇️       -->
+                <!-- ========================================================================== -->
+                <article class="blog-post" id="post-release-02">
+                    <!-- Change "Release 02: Statement" below if you want a different post title -->
+                    <h2 class="post-title">Release 02: Statement</h2>
+                    <!-- Change the date/subtitle line below if needed -->
+                    <div class="post-date">Posted by Admin | Publication: 02</div>
+
+                    <div class="video-post-box">
+                        <!-- Video Frame -->
+                        <div class="video-frame-wrapper" id="inline-video-frame" title="Click to Play / Pause">
+                            <canvas id="prop-canvas-inline" width="1280" height="720"></canvas>
+                            <video id="prop-video-inline" playsinline style="display:none;"></video>
+                            <div class="subtitle-overlay" id="subtitle-inline"></div>
+
+                            <!-- TOP-RIGHT ICON: TRUE FULLSCREEN MODE -->
+                            <button class="video-fullscreen-btn" id="btn-fullscreen-inline" title="Full Screen" aria-label="Full Screen">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M3 3h6v2H6.41l3.3 3.29-1.42 1.42L5 6.41V9H3V3zm18 0v6h-2V6.41l-3.29 3.3-1.42-1.42L17.59 5H15V3h6zM3 21v-6h2v2.59l3.29-3.3 1.42 1.42L6.41 19H9v2H3zm18 0h-6v-2h2.59l-3.3-3.29 1.42-1.42L19 17.59V15h2v6z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Icon-Only Controls Bar -->
+                        <div class="video-controls-bar">
+                            <button class="video-ctrl-btn" id="btn-play-inline" title="Play / Pause" aria-label="Play or Pause">
+                                <!-- Pause Icon by default (since video autoplays) -->
+                                <svg viewBox="0 0 24 24"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>
+                            </button>
+                            <button class="video-ctrl-btn" id="btn-stop-inline" title="Stop" aria-label="Stop">
+                                <!-- Stop Square Icon -->
+                                <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                            </button>
+                            <input type="range" class="video-seek-bar" id="seek-inline" min="0" max="100" step="0.1" value="0">
+                            <span class="video-timecode" id="timecode-inline">00:00 / 00:45</span>
+
+                            <!-- BOTTOM-RIGHT ICON: MAGNIFY MODAL POPUP -->
+                            <button class="video-ctrl-btn" id="btn-mag-inline" title="Magnify Window" aria-label="Magnify Window">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M4 9V4h5v2H6v3H4zm14-5h-3v2h3v3h2V4h-2zM6 15H4v5h5v-2H6v-3zm12 3h-3v2h5v-5h-2v3z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                <!-- ========================================================================== -->
+                <!-- ⬆️⬆️⬆️ END OF NEW VIDEO POST ⬆️⬆️⬆️                                        -->
+                <!-- ========================================================================== -->
+
+
+                <!-- ========================================================================== -->
+                <!-- FIRST POST (BELOW THE VIDEO): THE 503 MOSAIC LIST                          -->
+                <!-- ========================================================================== -->
+                <article class="blog-post" id="post-release-01">
+                    <h2 class="post-title">Release 01: The List (503 Records)</h2>
+                    <div class="post-date">Posted by Admin | System Init: 00</div>
+
+                    <div class="list-container" id="listScrollContainer">
+                        <ul class="name-list" id="target-list">
+                            <!-- Content dynamically loaded via CSV -->
+                        </ul>
+                    </div>
+
+                    <div class="action-bar">
+                        <button class="action-btn">PRINT LOG</button>
+                        <button class="action-btn">EXPORT .CSV</button>
+                    </div>
+                </article>
+
+            </main>
+            
+        </div>
+
+        <footer class="site-footer">
+            SYS_VER: 1.0.4.88 // LOC: UNKNOWN // CONNECTION SECURE // ENCRYPTION: AES-256 (GCM)
+        </footer>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIDEO MAGNIFY MODAL OVERLAY (OPENS WHEN BOTTOM-RIGHT MAGNIFY CLICKED) -->
+    <!-- ===================================================================== -->
+    <div id="video-magnify-overlay">
+        <div id="video-magnify-card">
+            <div class="video-mag-header">
+                <!-- ⬇️⬇️⬇️ EDIT HERE: TITLE SHOWN INSIDE THE MAGNIFIED VIDEO POPUP ⬇️⬇️⬇️ -->
+                <span class="video-mag-title">Release 02: Statement</span>
+                <span class="video-mag-sub">PUBLICATION_02 // VIDEO</span>
+            </div>
+
+            <div class="video-frame-wrapper" id="modal-video-frame" title="Click to Play / Pause">
+                <canvas id="prop-canvas-modal" width="1280" height="720"></canvas>
+                <video id="prop-video-modal" playsinline style="display:none;" muted></video>
+                <div class="subtitle-overlay" id="subtitle-modal"></div>
+
+                <!-- TOP-RIGHT ICON INSIDE MODAL: TRUE FULLSCREEN MODE -->
+                <button class="video-fullscreen-btn" id="btn-fullscreen-modal" title="Full Screen" aria-label="Full Screen">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 3h6v2H6.41l3.3 3.29-1.42 1.42L5 6.41V9H3V3zm18 0v6h-2V6.41l-3.29 3.3-1.42-1.42L17.59 5H15V3h6zM3 21v-6h2v2.59l3.29-3.3 1.42 1.42L6.41 19H9v2H3zm18 0h-6v-2h2.59l-3.3-3.29 1.42-1.42L19 17.59V15h2v6z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Icon-Only Controls Bar in Magnified Modal -->
+            <div class="video-controls-bar">
+                <button class="video-ctrl-btn" id="btn-play-modal" title="Play / Pause" aria-label="Play or Pause">
+                    <svg viewBox="0 0 24 24"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>
+                </button>
+                <button class="video-ctrl-btn" id="btn-stop-modal" title="Stop" aria-label="Stop">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                </button>
+                <input type="range" class="video-seek-bar" id="seek-modal" min="0" max="100" step="0.1" value="0">
+                <span class="video-timecode" id="timecode-modal">00:00 / 00:45</span>
+                <button class="video-ctrl-btn" id="btn-close-video-modal" title="Close Magnify" aria-label="Close Magnify">
+                    <!-- Close 'X' Icon -->
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mag-close-hint">[ PRESS ESC OR CLICK OUTSIDE TO CLOSE ]</div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SUBJECT MAGNIFY MODAL OVERLAY (ORIGINAL)                              -->
+    <!-- ===================================================================== -->
+    <div id="magnify-overlay">
+        <div id="magnify-card">
+            <div class="mag-wrapper">
+                <div class="mag-photo-container">
+                    <svg class="silhouette-svg" style="width: 170px; height: 210px;" viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet">
+                        <path d="M50 12 C35 12 25 24 25 40 C25 55 35 65 50 65 C65 65 75 55 75 40 C75 24 65 12 50 12 Z M15 120 C15 90 30 78 50 78 C70 78 85 90 85 120 Z" />
+                    </svg>
+                    <img id="mag-photo-img" src="" alt="Subject Photo" onerror="this.style.display='none';">
+                </div>
+                
+                <div class="mag-details">
+                    <div class="mag-field">
+                        <span class="mag-label">Subject ID</span>
+                        <span class="mag-value" id="mag-id">---</span>
+                    </div>
+                    <div class="mag-field">
+                        <span class="mag-label">Name</span>
+                        <span class="mag-value" id="mag-name">---</span>
+                    </div>
+                    <div class="mag-field">
+                        <span class="mag-label">Kennitala</span>
+                        <span class="mag-value" id="mag-kt">---</span>
+                    </div>
+                    <div class="mag-field">
+                        <span class="mag-label">Designation</span>
+                        <span class="mag-value" id="mag-job">---</span>
+                    </div>
+                    <div class="mag-field" style="border:none;">
+                        <span class="mag-label">Conviction</span>
+                        <span class="mag-value" id="mag-offense">---</span>
+                    </div>
+                </div>
+
+                <div class="mag-close-hint">[ PRESS ESC OR CLICK OUTSIDE TO CLOSE ]</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Director Control Menu -->
+    <div id="director-menu">
+        <h4>DIRECTOR CONTROLS</h4>
+        <ul>
+            <li><span class="key">h</span> Toggle this menu</li>
+            <li><span class="key">v</span> Magnify / Close Video</li>
+            <li><span class="key">Space</span> Play / Pause Video</li>
+            <li><span class="key">p</span> Play / Pause Auto-Scroll <span id="status-play" class="status-highlight">[PAUSED]</span></li>
+            <li><span class="key">f</span> Increase Speed</li>
+            <li><span class="key">s</span> Decrease Speed</li>
+            <li><span class="key">t</span> Jump to Top</li>
+            <li><span class="key">b</span> Jump to Bottom</li>
+        </ul>
+        <div style="margin-top: 10px; border-top: 1px dashed #444; padding-top: 5px;">
+            Speed: <span id="status-speed" class="status-highlight">1.0</span> px/frame
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 🎬 ⬇️⬇️⬇️ PROP MASTER CONFIGURATION (EDIT FILES & SUBTITLES HERE) ⬇️⬇️⬇️
+        // =========================================================================
+
+        // 1. GITHUB CSV URL (Already set to your repository):
+        const CSV_URL = "https://raw.githubusercontent.com/nicolaskunysz/vidarr/main/Vidarr_List_503%20-%20Vidarr%20List.csv";
+
+        // 2. MASK IMAGE PATH:
+        //    - If you upload "mask generated.jpg" to the MAIN ROOT folder of your GitHub repo, leave this as: "mask generated.jpg"
+        //    - If you upload it inside your "images" folder, change this to: "images/mask generated.jpg"
+        const MASK_IMAGE_URL = "mask generated.jpg";
+
+        // 3. OPTIONAL VOICEOVER AUDIO FILE (.mp3 or .wav):
+        //    - If you have an audio file of the speech, put its path here (e.g., "statement.mp3" or "images/statement.mp3").
+        //    - The masked character's head movements will automatically sync to the voice! Leave "" if no audio yet.
+        const VOICEOVER_AUDIO_URL = "";
+
+        // 4. OPTIONAL REAL .MP4 VIDEO FILE OVERRIDE:
+        //    - Leave this empty ("") to use the real-time animated "mask generated.jpg" engine.
+        //    - If you ever render an .mp4 video file later and want to play that instead, put its path here (e.g., "statement.mp4").
+        const VIDEO_MP4_URL = "";
+
+        // 5. VIDEO DURATION (IN SECONDS):
+        //    - How long the timeline scrubber runs when no audio/mp4 file is attached:
+        const DEFAULT_DURATION = 45;
+
+        // 6. SCRIPTED SUBTITLES (TIMED TEXT ON VIDEO):
+        //    - To show subtitles at the bottom of the video, remove the "//" at the start of the lines below
+        //      and set the start time (in seconds), end time (in seconds), and the text:
+        const SUBTITLES = [
+            // { start: 2,  end: 7,  text: "First line of scripted speech goes here." },
+            // { start: 8,  end: 14, text: "Second line of scripted speech goes here." },
+            // { start: 15, end: 22, text: "Third line of scripted speech goes here." }
+        ];
+
+        // =========================================================================
+        // ⬆️⬆️⬆️ END OF MANUAL CONFIGURATION — DO NOT NEED TO EDIT BELOW ⬆️⬆️⬆️
+        // =========================================================================
+
+
+        // =========================================================================
+        // REAL-TIME ANIMATED VIDEO ENGINE (INLINE + MAGNIFIED MODAL + FULLSCREEN)
+        // =========================================================================
+        const ICON_PLAY_SVG = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        const ICON_PAUSE_SVG = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>';
+
+        const canvasInline = document.getElementById('prop-canvas-inline');
+        const ctxInline = canvasInline.getContext('2d');
+        const canvasModal = document.getElementById('prop-canvas-modal');
+        const ctxModal = canvasModal.getContext('2d');
+
+        const videoInline = document.getElementById('prop-video-inline');
+        const videoModal = document.getElementById('prop-video-modal');
+
+        const subInline = document.getElementById('subtitle-inline');
+        const subModal = document.getElementById('subtitle-modal');
+
+        const btnPlayInline = document.getElementById('btn-play-inline');
+        const btnStopInline = document.getElementById('btn-stop-inline');
+        const seekInline = document.getElementById('seek-inline');
+        const timeInline = document.getElementById('timecode-inline');
+        const btnMagInline = document.getElementById('btn-mag-inline');
+        const btnFullscreenInline = document.getElementById('btn-fullscreen-inline');
+
+        const btnPlayModal = document.getElementById('btn-play-modal');
+        const btnStopModal = document.getElementById('btn-stop-modal');
+        const seekModal = document.getElementById('seek-modal');
+        const timeModal = document.getElementById('timecode-modal');
+        const btnCloseVideoModal = document.getElementById('btn-close-video-modal');
+        const btnFullscreenModal = document.getElementById('btn-fullscreen-modal');
+
+        const inlineVideoFrame = document.getElementById('inline-video-frame');
+        const modalVideoFrame = document.getElementById('modal-video-frame');
+        const videoMagOverlay = document.getElementById('video-magnify-overlay');
+
+        let isUsingMp4 = Boolean(VIDEO_MP4_URL && VIDEO_MP4_URL.trim() !== "");
+        let isVideoPlaying = true;
+        let currentTime = 0;
+        let lastFrameTime = performance.now();
+
+        const masterBuffer = document.createElement('canvas');
+        masterBuffer.width = 1280;
+        masterBuffer.height = 720;
+        const mCtx = masterBuffer.getContext('2d');
+
+        const subjectBuffer = document.createElement('canvas');
+        subjectBuffer.width = 1280;
+        subjectBuffer.height = 720;
+        const subCtx = subjectBuffer.getContext('2d');
+
+        const maskImg = new Image();
+        maskImg.crossOrigin = "anonymous";
+        let imageLoaded = false;
+        maskImg.onload = () => { imageLoaded = true; };
+        maskImg.src = MASK_IMAGE_URL;
+
+        let audioEl = null;
+        let audioCtx = null;
+        let analyser = null;
+        let dataArray = null;
+
+        if (VOICEOVER_AUDIO_URL && !isUsingMp4) {
+            audioEl = new Audio(VOICEOVER_AUDIO_URL);
+            audioEl.crossOrigin = "anonymous";
+        }
+
+        function initAudioAnalyser() {
+            if (!audioEl || audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createMediaElementSource(audioEl);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 128;
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            } catch (e) {
+                console.warn("Audio Context skipped:", e);
+            }
+        }
+
+        function getVoiceAmplitude() {
+            if (analyser && dataArray && isVideoPlaying && audioEl && !audioEl.paused) {
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < 24; i++) sum += dataArray[i];
+                return Math.min(1, (sum / 24) / 180);
+            }
+            if (!isVideoPlaying) return 0;
+            const sentenceEnvelope = Math.sin(currentTime * 1.4) + Math.cos(currentTime * 0.55) * 0.7;
+            if (sentenceEnvelope < -0.2) return 0;
+            const syllablePulse = (Math.sin(currentTime * 12.5) * 0.45 + 0.55) *
+                                  (Math.cos(currentTime * 7.2) * 0.35 + 0.65);
+            return Math.min(1, Math.max(0, syllablePulse * 0.75));
+        }
+
+        const grainCanvas = document.createElement('canvas');
+        grainCanvas.width = 256;
+        grainCanvas.height = 256;
+        const grainCtx = grainCanvas.getContext('2d');
+        function refreshGrain() {
+            const imgData = grainCtx.createImageData(256, 256);
+            const buf = imgData.data;
+            for (let i = 0; i < buf.length; i += 4) {
+                const v = (Math.random() * 255) | 0;
+                buf[i] = v; buf[i+1] = v; buf[i+2] = v; buf[i+3] = 20;
+            }
+            grainCtx.putImageData(imgData, 0, 0);
+        }
+        refreshGrain();
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, '0');
+            const s = Math.floor(sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function syncPlayerUI(totalDur) {
+            const pct = (currentTime / totalDur) * 100;
+            const tc = `${formatTime(currentTime)} / ${formatTime(totalDur)}`;
+            seekInline.value = pct;
+            seekModal.value = pct;
+            timeInline.textContent = tc;
+            timeModal.textContent = tc;
+            btnPlayInline.innerHTML = isVideoPlaying ? ICON_PAUSE_SVG : ICON_PLAY_SVG;
+            btnPlayModal.innerHTML = isVideoPlaying ? ICON_PAUSE_SVG : ICON_PLAY_SVG;
+
+            const activeSub = SUBTITLES.find(s => currentTime >= s.start && currentTime <= s.end);
+            if (activeSub) {
+                subInline.style.display = 'block';
+                subModal.style.display = 'block';
+                subInline.textContent = activeSub.text;
+                subModal.textContent = activeSub.text;
+            } else {
+                subInline.style.display = 'none';
+                subModal.style.display = 'none';
+            }
+        }
+
+        function renderCanvasLoop(now) {
+            if (isUsingMp4) return;
+
+            const dt = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            const totalDur = (audioEl && audioEl.duration) ? audioEl.duration : DEFAULT_DURATION;
+
+            if (isVideoPlaying) {
+                if (audioEl && !audioEl.paused) {
+                    currentTime = audioEl.currentTime;
+                } else {
+                    currentTime += dt;
+                    if (currentTime >= totalDur) currentTime = 0;
+                }
+            }
+
+            syncPlayerUI(totalDur);
+
+            const W = masterBuffer.width;
+            const H = masterBuffer.height;
+            const voiceAmp = getVoiceAmplitude();
+
+            const camDriftX = Math.sin(currentTime * 0.45) * 2.2;
+            const camDriftY = Math.cos(currentTime * 0.35) * 1.8;
+
+            const headNodY = Math.sin(currentTime * 1.7) * 3.5 + (voiceAmp * 8.5) * Math.sin(currentTime * 9.5);
+            const headSwayX = Math.sin(currentTime * 0.8) * 5.5 + (voiceAmp * 4.0) * Math.cos(currentTime * 5.2);
+            const headTilt = (Math.sin(currentTime * 0.65) * 0.011) + (voiceAmp * 0.016 * Math.sin(currentTime * 6.0));
+            const breathScaleY = 1.0 + Math.sin(currentTime * 1.7) * 0.009 + (voiceAmp * 0.012);
+            const breathScaleX = 1.0 + Math.sin(currentTime * 1.7) * 0.005 + (voiceAmp * 0.006);
+
+            mCtx.fillStyle = "#040404";
+            mCtx.fillRect(0, 0, W, H);
+
+            if (imageLoaded) {
+                // 1. Static gritty basement background & overhead bulb
+                mCtx.save();
+                mCtx.translate(W / 2 + camDriftX, H / 2 + camDriftY);
+                mCtx.scale(1.02, 1.02);
+                mCtx.drawImage(maskImg, -W / 2, -H / 2, W, H);
+                mCtx.restore();
+
+                const shadowBehind = mCtx.createRadialGradient(W * 0.505, H * 0.56, 40, W * 0.505, H * 0.60, 380);
+                shadowBehind.addColorStop(0, "rgba(4, 4, 5, 0.85)");
+                shadowBehind.addColorStop(0.65, "rgba(4, 4, 5, 0.45)");
+                shadowBehind.addColorStop(1, "rgba(4, 4, 5, 0)");
+                mCtx.fillStyle = shadowBehind;
+                mCtx.fillRect(0, 0, W, H);
+
+                // 2. Isolated hooded figure & silver mask motion
+                subCtx.clearRect(0, 0, W, H);
+                subCtx.save();
+                const pivotX = W * 0.508;
+                const pivotY = H * 0.72;
+                subCtx.translate(pivotX + headSwayX, pivotY + headNodY);
+                subCtx.rotate(headTilt);
+                subCtx.scale(breathScaleX, breathScaleY);
+                subCtx.drawImage(maskImg, -pivotX, -pivotY, W, H);
+                subCtx.restore();
+
+                subCtx.save();
+                subCtx.globalCompositeOperation = "destination-in";
+                const maskGrad = subCtx.createRadialGradient(
+                    W * 0.508 + headSwayX * 0.5, H * 0.58 + headNodY * 0.5, 110,
+                    W * 0.508 + headSwayX * 0.3, H * 0.64, 420
+                );
+                maskGrad.addColorStop(0, "rgba(0,0,0,1)");
+                maskGrad.addColorStop(0.62, "rgba(0,0,0,0.96)");
+                maskGrad.addColorStop(0.85, "rgba(0,0,0,0.35)");
+                maskGrad.addColorStop(1, "rgba(0,0,0,0)");
+                subCtx.fillStyle = maskGrad;
+                subCtx.fillRect(0, H * 0.14, W, H * 0.86);
+                subCtx.restore();
+
+                mCtx.drawImage(subjectBuffer, 0, 0);
+
+                // 3. Silver mask specular highlight
+                const maskCenterX = W * 0.508 + headSwayX;
+                const maskCenterY = H * 0.535 + headNodY;
+
+                mCtx.save();
+                mCtx.globalCompositeOperation = "screen";
+                const silverGlint = mCtx.createRadialGradient(
+                    maskCenterX - 6 + Math.sin(currentTime * 3) * 4,
+                    maskCenterY - 25,
+                    4,
+                    maskCenterX,
+                    maskCenterY,
+                    135
+                );
+                const glintAlpha = 0.04 + voiceAmp * 0.085;
+                silverGlint.addColorStop(0, `rgba(235, 242, 255, ${glintAlpha})`);
+                silverGlint.addColorStop(0.45, `rgba(180, 195, 210, ${glintAlpha * 0.4})`);
+                silverGlint.addColorStop(1, "rgba(0, 0, 0, 0)");
+                mCtx.fillStyle = silverGlint;
+                mCtx.beginPath();
+                mCtx.ellipse(maskCenterX, maskCenterY, 95, 130, headTilt, 0, Math.PI * 2);
+                mCtx.fill();
+                mCtx.restore();
+
+                // 4. Overhead bulb flicker
+                const bulbX = W * 0.508 + camDriftX;
+                const bulbY = H * 0.033 + camDriftY;
+                const bulbFlicker = 0.82 + Math.sin(now * 0.028) * 0.07 + (Math.random() * 0.08);
+
+                mCtx.save();
+                mCtx.globalCompositeOperation = "screen";
+                const bulbGlow = mCtx.createRadialGradient(bulbX, bulbY, 5, bulbX, bulbY, W * 0.55);
+                bulbGlow.addColorStop(0, `rgba(255, 245, 220, ${0.22 * bulbFlicker})`);
+                bulbGlow.addColorStop(0.12, `rgba(255, 210, 150, ${0.09 * bulbFlicker})`);
+                bulbGlow.addColorStop(0.5, `rgba(180, 130, 85, ${0.03 * bulbFlicker})`);
+                bulbGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+                mCtx.fillStyle = bulbGlow;
+                mCtx.fillRect(0, 0, W, H);
+                mCtx.restore();
+
+                mCtx.fillStyle = `rgba(0, 0, 0, ${(1 - bulbFlicker) * 0.35})`;
+                mCtx.fillRect(0, 0, W, H);
+            } else {
+                mCtx.fillStyle = "#888888";
+                mCtx.font = "16px 'Courier New', monospace";
+                mCtx.textAlign = "center";
+                mCtx.fillText("[ LOADING: " + MASK_IMAGE_URL + " ]", W / 2, H / 2);
+            }
+
+            // 5. 35mm Film Grain
+            if (Math.random() > 0.35) refreshGrain();
+            mCtx.save();
+            mCtx.translate((Math.random() * 64) | 0, (Math.random() * 64) | 0);
+            mCtx.fillStyle = mCtx.createPattern(grainCanvas, 'repeat');
+            mCtx.fillRect(-64, -64, W + 128, H + 128);
+            mCtx.restore();
+
+            ctxInline.drawImage(masterBuffer, 0, 0);
+            if (videoMagOverlay.style.display === 'flex' || document.fullscreenElement === modalVideoFrame) {
+                ctxModal.drawImage(masterBuffer, 0, 0);
+            }
+
+            requestAnimationFrame(renderCanvasLoop);
+        }
+
+        if (isUsingMp4) {
+            canvasInline.style.display = 'none';
+            canvasModal.style.display = 'none';
+            videoInline.style.display = 'block';
+            videoModal.style.display = 'block';
+            videoInline.src = VIDEO_MP4_URL;
+            videoModal.src = VIDEO_MP4_URL;
+            videoInline.play().catch(() => { isVideoPlaying = false; syncPlayerUI(DEFAULT_DURATION); });
+            videoModal.play().catch(() => {});
+
+            videoInline.addEventListener('timeupdate', () => {
+                currentTime = videoInline.currentTime;
+                if (Math.abs(videoModal.currentTime - currentTime) > 0.3) {
+                    videoModal.currentTime = currentTime;
+                }
+                syncPlayerUI(videoInline.duration || DEFAULT_DURATION);
+            });
+        } else {
+            requestAnimationFrame(renderCanvasLoop);
+        }
+
+        // --- VIDEO CONTROLS, FULLSCREEN & MAGNIFY MODAL LOGIC ---
+        function toggleVideoPlayPause() {
+            isVideoPlaying = !isVideoPlaying;
+            if (isUsingMp4) {
+                if (isVideoPlaying) {
+                    videoInline.play();
+                    videoModal.play();
+                } else {
+                    videoInline.pause();
+                    videoModal.pause();
+                }
+                syncPlayerUI(videoInline.duration || DEFAULT_DURATION);
+            } else {
+                if (audioEl) {
+                    initAudioAnalyser();
+                    if (isVideoPlaying) {
+                        audioEl.currentTime = currentTime;
+                        audioEl.play();
+                    } else {
+                        audioEl.pause();
+                    }
+                }
+                const totalDur = (audioEl && audioEl.duration) ? audioEl.duration : DEFAULT_DURATION;
+                syncPlayerUI(totalDur);
+            }
+        }
+
+        function stopVideo() {
+            isVideoPlaying = false;
+            currentTime = 0;
+            if (isUsingMp4) {
+                videoInline.pause();
+                videoModal.pause();
+                videoInline.currentTime = 0;
+                videoModal.currentTime = 0;
+                syncPlayerUI(videoInline.duration || DEFAULT_DURATION);
+            } else {
+                if (audioEl) {
+                    audioEl.pause();
+                    audioEl.currentTime = 0;
+                }
+                const totalDur = (audioEl && audioEl.duration) ? audioEl.duration : DEFAULT_DURATION;
+                syncPlayerUI(totalDur);
+            }
+        }
+
+        function handleVideoSeek(val) {
+            const pct = parseFloat(val) / 100;
+            if (isUsingMp4 && videoInline.duration) {
+                currentTime = pct * videoInline.duration;
+                videoInline.currentTime = currentTime;
+                videoModal.currentTime = currentTime;
+                syncPlayerUI(videoInline.duration);
+            } else {
+                const totalDur = (audioEl && audioEl.duration) ? audioEl.duration : DEFAULT_DURATION;
+                currentTime = pct * totalDur;
+                if (audioEl) audioEl.currentTime = currentTime;
+                syncPlayerUI(totalDur);
+            }
+        }
+
+        // Bottom-Right Button: Opens the Magnify Modal
+        function openVideoMagnify() {
+            videoMagOverlay.style.display = 'flex';
+            if (!isUsingMp4) {
+                ctxModal.drawImage(masterBuffer, 0, 0);
+            }
+        }
+
+        function closeVideoMagnify() {
+            videoMagOverlay.style.display = 'none';
+        }
+
+        // Top-Right Button: Activates True Browser Fullscreen Mode
+        function toggleFullscreenMode(targetWrapper, e) {
+            if (e) e.stopPropagation();
+            const fsElement = document.fullscreenElement || document.webkitFullscreenElement;
+            if (!fsElement) {
+                if (targetWrapper.requestFullscreen) {
+                    targetWrapper.requestFullscreen();
+                } else if (targetWrapper.webkitRequestFullscreen) {
+                    targetWrapper.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        btnPlayInline.addEventListener('click', toggleVideoPlayPause);
+        btnPlayModal.addEventListener('click', toggleVideoPlayPause);
+        btnStopInline.addEventListener('click', stopVideo);
+        btnStopModal.addEventListener('click', stopVideo);
+
+        seekInline.addEventListener('input', (e) => handleVideoSeek(e.target.value));
+        seekModal.addEventListener('input', (e) => handleVideoSeek(e.target.value));
+
+        // Top-right button triggers Fullscreen
+        btnFullscreenInline.addEventListener('click', (e) => toggleFullscreenMode(inlineVideoFrame, e));
+        btnFullscreenModal.addEventListener('click', (e) => toggleFullscreenMode(modalVideoFrame, e));
+
+        // Bottom-right button triggers Magnify Modal
+        btnMagInline.addEventListener('click', openVideoMagnify);
+        btnCloseVideoModal.addEventListener('click', closeVideoMagnify);
+
+        // Clicking on the video frame itself toggles Play / Pause
+        inlineVideoFrame.addEventListener('click', toggleVideoPlayPause);
+        modalVideoFrame.addEventListener('click', toggleVideoPlayPause);
+
+        videoMagOverlay.addEventListener('click', function(e) {
+            if (e.target === videoMagOverlay) closeVideoMagnify();
+        });
+
+        // =========================================================================
+        // ORIGINAL MOSAIC LIST & CSV LOADER
+        // =========================================================================
+        const listContainer = document.getElementById('target-list');
+        const searchInput = document.getElementById('searchInput');
+        const resultCount = document.getElementById('resultCount');
+        
+        const magOverlay = document.getElementById('magnify-overlay');
+        const magId = document.getElementById('mag-id');
+        const magName = document.getElementById('mag-name');
+        const magKt = document.getElementById('mag-kt');
+        const magJob = document.getElementById('mag-job');
+        const magOffense = document.getElementById('mag-offense');
+        const magPhotoImg = document.getElementById('mag-photo-img');
+
+        const svgSilhouetteHTML = `
+            <svg class="silhouette-svg" viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet">
+                <path d="M50 12 C35 12 25 24 25 40 C25 55 35 65 50 65 C65 65 75 55 75 40 C75 24 65 12 50 12 Z M15 120 C15 90 30 78 50 78 C70 78 85 90 85 120 Z" />
+            </svg>
+        `;
+
+        // Fetch and parse CSV directly from GitHub
+        Papa.parse(CSV_URL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                renderMosaicCards(results.data);
+            },
+            error: function(err) {
+                console.error("Error loading CSV file:", err);
+            }
+        });
+
+        function renderMosaicCards(data) {
+            listContainer.innerHTML = ""; 
+
+            data.forEach((row) => {
+                // Map column names from CSV
+                const rawId = row['#'] ? String(row['#']).trim() : '0';
+                const formattedId = rawId.padStart(3, '0'); // Ensures 001, 002, etc.
+                
+                const name = row['Full Name'] ? String(row['Full Name']).trim().toUpperCase() : '---';
+                const kt = row['Kennitala (fake)'] ? String(row['Kennitala (fake)']).trim() : '---';
+                const job = row['Occupation'] ? String(row['Occupation']).trim().toUpperCase() : '---';
+                const offense = row['Accusation'] ? String(row['Accusation']).trim().toUpperCase() : '---';
+                
+                // Point directly to images/001.png in your repository
+                const photoPath = `images/${formattedId}.png`;
+
+                const li = document.createElement('li');
+                li.dataset.id = formattedId;
+                li.dataset.name = name;
+                li.dataset.kt = kt;
+                li.dataset.job = job;
+                li.dataset.offense = offense;
+                li.dataset.photo = photoPath; 
+
+                // SVG silhouette acts as fallback if the PNG fails to load
+                li.innerHTML = `
+                    <div class="mosaic-photo">
+                        ${svgSilhouetteHTML}
+                        <img src="${photoPath}" alt="${name}" onerror="this.style.display='none';">
+                    </div>
+                    <div class="mosaic-data">
+                        <span class="col-id">${formattedId}</span>
+                        <span class="col-name">${name}</span>
+                        <span class="col-kt">${kt}</span>
+                        <span class="col-job">${job}</span>
+                        <span class="col-offense">${offense}</span>
+                    </div>
+                `;
+                
+                listContainer.appendChild(li);
+            });
+        }
+
+        // --- MAGNIFY MODAL LOGIC --- //
+        function openMagnifyModal(li) {
+            magId.textContent = li.dataset.id;
+            magName.textContent = li.dataset.name;
+            magKt.textContent = li.dataset.kt;
+            magJob.textContent = li.dataset.job;
+            magOffense.textContent = li.dataset.offense;
+
+            const photoUrl = li.dataset.photo;
+            magPhotoImg.src = photoUrl;
+            magPhotoImg.style.display = 'block'; 
+
+            magOverlay.style.display = 'flex';
+        }
+
+        function closeMagnifyModal() {
+            magOverlay.style.display = 'none';
+        }
+
+        magOverlay.addEventListener('click', function(e) {
+            if (e.target === magOverlay) closeMagnifyModal();
+        });
+
+        listContainer.addEventListener('click', function(e) {
+            const li = e.target.closest('li');
+            if (!li) return;
+            openMagnifyModal(li);
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement === searchInput) return;
+            if (e.key.toLowerCase() === 'escape') {
+                if (videoMagOverlay.style.display === 'flex') closeVideoMagnify();
+                if (magOverlay.style.display === 'flex') closeMagnifyModal();
+            }
+        });
+
+        // Search Bar
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toUpperCase();
+            const items = listContainer.getElementsByTagName('li');
+            let matchCount = 0;
+            let firstMatch = null;
+            
+            for (let i = 0; i < items.length; i++) {
+                const nameText = items[i].dataset.name; 
+                items[i].style.display = 'flex'; 
+                
+                if (searchTerm.length === 0) {
+                    // Reset search
+                } else if (nameText.includes(searchTerm)) {
+                    matchCount++;
+                    if (!firstMatch) firstMatch = items[i];
+                } else {
+                    items[i].style.display = 'none';
+                }
+            }
+            
+            if (searchTerm.length === 0) {
+                resultCount.textContent = "";
+                for (let i = 0; i < items.length; i++) items[i].style.display = 'flex';
+            } else {
+                resultCount.textContent = `[ ${matchCount} ]`;
+                if (firstMatch) {
+                    const absoluteTop = firstMatch.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: absoluteTop - (window.innerHeight * 0.3), behavior: 'instant' });
+                }
+            }
+        });
+
+        // --- DIRECTOR CONTROLS --- //
+        let isAutoScrolling = false;
+        let autoScrollSpeed = 1.0; 
+        let currentScrollY = window.scrollY;
+        let animationFrameId;
+
+        const dirMenu = document.getElementById('director-menu');
+        const statPlay = document.getElementById('status-play');
+        const statSpeed = document.getElementById('status-speed');
+
+        function autoScrollLoop() {
+            if (isAutoScrolling) {
+                currentScrollY += autoScrollSpeed;
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                if (currentScrollY >= maxScroll) currentScrollY = maxScroll;
+
+                window.scrollTo(0, currentScrollY);
+                currentScrollY = window.scrollY; 
+                
+                animationFrameId = requestAnimationFrame(autoScrollLoop);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement === searchInput) return;
+
+            const key = e.key.toLowerCase();
+
+            switch(key) {
+                case 'h':
+                    dirMenu.style.display = (dirMenu.style.display === 'none') ? 'block' : 'none';
+                    break;
+                case 'v':
+                    if (videoMagOverlay.style.display === 'flex') {
+                        closeVideoMagnify();
+                    } else {
+                        openVideoMagnify();
+                    }
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    toggleVideoPlayPause();
+                    break;
+                case 'p':
+                    isAutoScrolling = !isAutoScrolling;
+                    if (isAutoScrolling) {
+                        statPlay.textContent = "[PLAYING]";
+                        statPlay.style.color = "#00FF00"; 
+                        currentScrollY = window.scrollY; 
+                        autoScrollLoop();
+                    } else {
+                        statPlay.textContent = "[PAUSED]";
+                        statPlay.style.color = "#FFFFFF";
+                        cancelAnimationFrame(animationFrameId);
+                    }
+                    break;
+                case 'f':
+                    autoScrollSpeed += 0.5;
+                    statSpeed.textContent = autoScrollSpeed.toFixed(1);
+                    break;
+                case 's':
+                    autoScrollSpeed = Math.max(0.5, autoScrollSpeed - 0.5); 
+                    statSpeed.textContent = autoScrollSpeed.toFixed(1);
+                    break;
+                case 't':
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    currentScrollY = 0;
+                    break;
+                case 'b':
+                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                    window.scrollTo({top: maxScroll, behavior: 'smooth'});
+                    currentScrollY = maxScroll;
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
